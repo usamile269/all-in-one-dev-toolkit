@@ -291,7 +291,7 @@ img,canvas,svg,video{max-width:100%}
 <div class="wrap">
 
   <!-- HERO -->
-  <div style="display:flex;justify-content:flex-end;padding:16px 4px 0"><button class="btn" id="themeBtn" onclick="tkTheme()">🌗 Light Mode</button></div>
+  <div class="theme-row"><span class="theme-cap">Theme</span><button type="button" class="tswitch" id="themeBtn" role="switch" aria-checked="false" aria-label="Toggle light mode" onclick="tkTheme()"><span class="ts-ico ts-moon">☾</span><span class="ts-knob"></span><span class="ts-ico ts-sun">☀</span></button><span class="theme-state" id="themeState">Dark</span></div>
   <header class="hero">
     <canvas id="bgCanvas" hidden></canvas><video id="bgVideo" hidden autoplay muted loop playsinline></video>
     <div class="hero-kicker">Developer Utilities · Admin Powered</div>
@@ -958,6 +958,7 @@ var tkAnimId=null;
 function tkStopBg(){var c=document.getElementById('bgCanvas'),v=document.getElementById('bgVideo');if(c)c.hidden=true;if(v){v.hidden=true;v.pause();}if(tkAnimId){cancelAnimationFrame(tkAnimId);tkAnimId=null;}}
 function tkStartAnim(){
   var c=document.getElementById('bgCanvas');if(!c)return;c.hidden=false;
+  var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var ctx=c.getContext('2d'),W,H,pts=[];
