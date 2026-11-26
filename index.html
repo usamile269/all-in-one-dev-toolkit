@@ -306,13 +306,26 @@ img,canvas,svg,video{max-width:100%}
 
 .theme-btn{width:32px;height:32px;display:grid;place-items:center;background:var(--panel-3);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:15px;color:var(--ink-2);transition:background .15s,border-color .15s,color .15s;flex-shrink:0}
 .theme-btn:hover{background:var(--glass-3);border-color:var(--line-2);color:var(--ink)}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 4px 0}
+.tb-brand{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--faint)}
+.nav-status{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.45);animation:livePulse 2.2s infinite}
+.status-dot.off{background:#ef4444;animation:none;box-shadow:none}
+@keyframes livePulse{70%{box-shadow:0 0 0 7px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.mnt-overlay{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:22px}
+.mnt-overlay[hidden]{display:none}
+.mnt-card{max-width:520px;width:100%;text-align:center;background:var(--glass);border:1px solid var(--line);border-radius:20px;padding:38px 28px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.mnt-card h2{font-family:var(--display);font-style:italic;font-size:32px;margin:10px 0 8px}
+.mnt-card p{color:var(--muted);line-height:1.65}
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <!-- HERO -->
-    <header class="hero">
+    <div class="topbar"><span class="tb-brand">🧰 ALL-IN-ONE DEV TOOLKIT</span><span class="nav-status"><span class="status-dot" id="liveDot"></span><span id="liveTxt">Live</span></span></div>
+  <header class="hero">
     <canvas id="bgCanvas" hidden></canvas><video id="bgVideo" hidden autoplay muted loop playsinline></video>
     <div class="hero-kicker">Developer Utilities · Admin Powered</div>
     <div class="hero-greet" id="greetLine"></div>
@@ -396,7 +409,7 @@ img,canvas,svg,video{max-width:100%}
           <select id="bgType"><option value="none">None (plain)</option><option value="anim">Animated (live particles — video-like)</option><option value="video">Video URL (mp4/webm)</option></select>
         </div>
         <div class="field"><label for="bgUrl">Video URL (only for the Video type)</label><input type="text" id="bgUrl" placeholder="https://example.com/video.mp4"></div>
-        <button class="btn btn-dark" style="width:100%" onclick="tkSaveSettings()">💾 Save Options — Visible to Everyone</button>
+        <div class="field"><label for="gaId">Google Analytics ID</label><input type="text" id="gaId" placeholder="G-XXXXXXXXXX"></div><div class="field"><label for="mntMsg">Maintenance Message</label><input type="text" id="mntMsg" placeholder="We are adding new tools — back soon!"></div><div class="field"><label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-family:var(--sans);text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink-2)"><input type="checkbox" id="mntToggle" style="width:18px;height:18px;accent-color:#22c55e"> 🔧 Maintenance Mode — visitors see a closed page (you still get in via /admin)</label></div><p class="admin-note" style="margin-bottom:12px">↕️ <b>Drag &amp; Drop:</b> In Admin mode, drag any tool card to change its order — the new order is saved for everyone.</p><button class="btn btn-dark" style="width:100%" onclick="tkSaveSettings()">💾 Save Options — Visible to Everyone</button>
         <div class="msg" id="bgMsg" style="margin-top:8px"></div>
       </div>
     </section>
@@ -647,6 +660,7 @@ img,canvas,svg,video{max-width:100%}
 
 
 
+
       <!-- CUSTOM GENERIC -->
       <div class="panel" id="panel-custom">
         <div class="admin-note" style="border-radius:10px;padding:12px;font-size:14px;line-height:1.6">⭐ This tool was added from the <b>Admin Panel</b>. Its workspace is ready — write your text / notes below, transform it and copy it.</div>
@@ -691,6 +705,7 @@ img,canvas,svg,video{max-width:100%}
   </footer>
 </div>
 
+<div class="mnt-overlay" id="mntOverlay" hidden><div class="mnt-card"><div style="font-size:44px">🔧</div><h2>We'll be back soon</h2><p id="mntText">We are adding new tools and making things better. Please check back shortly.</p><p style="margin-top:16px"><a href="https://whatsapp.com/channel/0029Vb8w02T7NoZxViyko72v" target="_blank" rel="noopener" style="color:var(--ink);font-weight:700">Join the WhatsApp Channel</a> · <a href="https://t.me/buntymain" target="_blank" rel="noopener" style="color:var(--ink);font-weight:700">Telegram</a></p></div></div>
 <div class="toast" id="toast">Copied!</div>
 
 <script>
@@ -977,6 +992,8 @@ function tkSaveSettings(){
   var bt=document.getElementById('bgType').value,bu=document.getElementById('bgUrl').value.trim();
   if(bu&&bt==='none'){bt='video';document.getElementById('bgType').value='video';}
   tkSettings={bgType:bt,bgUrl:bu};
+  var _mt=document.getElementById('mntToggle'),_mm=document.getElementById('mntMsg'),_ga=document.getElementById('gaId');
+  tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
   tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},null);
   var m=document.getElementById('bgMsg');if(m){m.textContent='✓ Options saved — all visitors will see this background.';m.className='msg ok';}
   tkApplyBg();
@@ -985,6 +1002,7 @@ var tkAnimId=null;
 function tkStopBg(){var c=document.getElementById('bgCanvas'),v=document.getElementById('bgVideo');if(c)c.hidden=true;if(v){v.hidden=true;v.pause();}if(tkAnimId){cancelAnimationFrame(tkAnimId);tkAnimId=null;}}
 function tkStartAnim(){
   var c=document.getElementById('bgCanvas');if(!c)return;c.hidden=false;
+  var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
@@ -1051,6 +1069,43 @@ window.addEventListener('DOMContentLoaded',tkGreet);
 
 
 
+
+</script>
+
+<script>
+function tkDragInit(){
+  if(!document.body.classList.contains('admin-mode'))return;
+  var grid=document.getElementById('toolGrid');if(!grid)return;
+  grid.querySelectorAll('.tool-card').forEach(function(card){
+    var m=card.innerHTML.match(/openTool\('([^']+)'\)/);if(!m)return;
+    card.dataset.tid=m[1];card.draggable=true;card.style.cursor='grab';
+    card.addEventListener('dragstart',function(e){e.dataTransfer.setData('text/plain',card.dataset.tid);card.style.opacity='.4';});
+    card.addEventListener('dragend',function(){card.style.opacity='';});
+    card.addEventListener('dragover',function(e){e.preventDefault();});
+    card.addEventListener('drop',function(e){e.preventDefault();var from=e.dataTransfer.getData('text/plain'),to=card.dataset.tid;if(!from||from===to)return;
+      var fi=-1,ti=-1,i;for(i=0;i<tools.length;i++){if(tools[i].id===from)fi=i;if(tools[i].id===to)ti=i;}
+      if(fi<0||ti<0)return;var it=tools.splice(fi,1)[0];tools.splice(ti,0,it);renderGrid();if(typeof tkSync==='function')tkSync();toast('Order updated — visible to everyone');});
+  });
+}
+(function(){
+  var _rg=window.renderGrid;window.renderGrid=function(){_rg();tkDragInit();};
+  var _ta=window.toggleAdmin;window.toggleAdmin=function(){_ta();renderGrid();};
+})();
+window.addEventListener('load',function(){
+  fetch('/api/tools').then(function(r){if(!r.ok)throw new Error('x');return r.json();}).then(function(d){
+    var lt=document.getElementById('liveTxt');if(lt)lt.textContent='Live';
+    var s=d.settings||{};
+    var ga=document.getElementById('gaId');if(ga&&s.gaId)ga.value=s.gaId;
+    var mt=document.getElementById('mntToggle');if(mt)mt.checked=!!s.maintenance;
+    var mm=document.getElementById('mntMsg');if(mm&&s.maintMsg)mm.value=s.maintMsg;
+    if(s.gaId&&/^G-[A-Z0-9-]+$/i.test(s.gaId)&&!window._gaOn){window._gaOn=1;
+      var sc=document.createElement('script');sc.async=true;sc.src='https://www.googletagmanager.com/gtag/js?id='+s.gaId;document.head.appendChild(sc);
+      var sc2=document.createElement('script');sc2.textContent="window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','"+s.gaId+"');";document.head.appendChild(sc2);}
+    var isAdmin=false;try{isAdmin=!!sessionStorage.getItem('tk_admin_key');}catch(e){}
+    if(location.search.indexOf('admin=1')>-1)isAdmin=true;
+    if(s.maintenance&&!isAdmin){var ov=document.getElementById('mntOverlay');if(ov){var tx=document.getElementById('mntText');if(tx&&s.maintMsg)tx.textContent=s.maintMsg;ov.hidden=false;document.body.style.overflow='hidden';}}
+  }).catch(function(){var dot=document.getElementById('liveDot');if(dot)dot.classList.add('off');var lt=document.getElementById('liveTxt');if(lt)lt.textContent='Offline';});
+});
 </script>
 </body>
 </html>
