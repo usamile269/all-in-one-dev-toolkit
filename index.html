@@ -243,6 +243,10 @@ img,canvas,svg,video{max-width:100%}
 .hero{position:relative;overflow:hidden}
 .hero>*{position:relative;z-index:1}
 #bgCanvas,#bgVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:.5;pointer-events:none}
+
+.channels-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px 0 4px}
+.channels-row a{border:1px solid var(--line-2);background:var(--glass-2);color:var(--ink);border-radius:999px;padding:10px 18px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.channels-row a:hover{border-color:rgba(255,255,255,.35)}
 </style>
 </head>
 <body>
@@ -516,6 +520,66 @@ img,canvas,svg,video{max-width:100%}
         <pre class="out" id="loremOut"></pre>
       </div>
 
+      
+      <!-- AGE -->
+      <div class="panel" id="panel-age">
+        <label class="cat">Date of Birth</label>
+        <input class="txt" type="date" id="ageDob">
+        <div class="btn-row"><button class="btn btn-dark" onclick="calcAge()">Calculate Age</button></div>
+        <div class="msg" id="ageOut"></div>
+      </div>
+
+      <!-- BMI -->
+      <div class="panel" id="panel-bmi">
+        <div class="two">
+          <div><label class="cat">Weight (kg)</label><input class="txt" type="number" id="bmiW" placeholder="e.g. 70"></div>
+          <div><label class="cat">Height (cm)</label><input class="txt" type="number" id="bmiH" placeholder="e.g. 175"></div>
+        </div>
+        <div class="btn-row"><button class="btn btn-dark" onclick="calcBMI()">Calculate BMI</button></div>
+        <div class="msg" id="bmiOut"></div>
+      </div>
+
+      <!-- PERCENT -->
+      <div class="panel" id="panel-percent">
+        <div class="two">
+          <div><label class="cat">Value</label><input class="txt" type="number" id="pctA" placeholder="e.g. 50"></div>
+          <div><label class="cat">Total / Base</label><input class="txt" type="number" id="pctB" placeholder="e.g. 200"></div>
+        </div>
+        <div class="btn-row"><button class="btn btn-dark" onclick="calcPct()">Calculate</button></div>
+        <div class="msg" id="pctOut"></div>
+      </div>
+
+      <!-- RANDOM -->
+      <div class="panel" id="panel-random">
+        <div class="two">
+          <div><label class="cat">Min</label><input class="txt" type="number" id="rndMin" value="1"></div>
+          <div><label class="cat">Max</label><input class="txt" type="number" id="rndMax" value="100"></div>
+        </div>
+        <label class="cat" style="margin-top:10px">Kitne numbers? <span id="rndLabel">5</span></label>
+        <input type="range" id="rndCount" min="1" max="50" value="5" oninput="document.getElementById('rndLabel').textContent=this.value">
+        <div class="btn-row"><button class="btn btn-dark" onclick="genRandom()">Generate</button><button class="btn" onclick="copyText(document.getElementById('rndOut').textContent)">Copy</button></div>
+        <pre class="out" id="rndOut"></pre>
+      </div>
+
+      <!-- UNIT -->
+      <div class="panel" id="panel-unit">
+        <label class="cat">Value</label>
+        <input class="txt" type="number" id="unitVal" placeholder="e.g. 10">
+        <div class="two" style="margin-top:10px">
+          <div><label class="cat">From</label><select class="txt" id="unitFrom"><option value="m">Meter</option><option value="km">Kilometer</option><option value="mi">Mile</option><option value="ft">Feet</option><option value="kg">Kilogram</option><option value="lb">Pound</option><option value="c">Celsius °C</option><option value="f">Fahrenheit °F</option></select></div>
+          <div><label class="cat">To</label><select class="txt" id="unitTo"><option value="km">Kilometer</option><option value="m">Meter</option><option value="mi">Mile</option><option value="ft">Feet</option><option value="kg">Kilogram</option><option value="lb">Pound</option><option value="c">Celsius °C</option><option value="f">Fahrenheit °F</option></select></div>
+        </div>
+        <div class="btn-row"><button class="btn btn-dark" onclick="convUnit()">Convert</button></div>
+        <div class="msg" id="unitOut"></div>
+      </div>
+
+      <!-- STOPWATCH -->
+      <div class="panel" id="panel-stopwatch">
+        <div style="text-align:center;font-family:var(--mono);font-size:44px;font-weight:700;padding:14px 0" id="swDisp">00:00.00</div>
+        <div class="btn-row" style="justify-content:center"><button class="btn btn-dark" onclick="swStart()">▶ Start</button><button class="btn" onclick="swStop()">⏸ Stop</button><button class="btn" onclick="swLap()">Lap</button><button class="btn" onclick="swReset()">Reset</button></div>
+        <pre class="out" id="swLaps" style="min-height:60px"></pre>
+      </div>
+
       <!-- CUSTOM GENERIC -->
       <div class="panel" id="panel-custom">
         <div class="admin-note" style="border-radius:10px;padding:12px;font-size:14px;line-height:1.6">⭐ Ye tool <b>Admin Panel</b> se add kiya gaya hai. Iska apna workspace ready hai — neeche apna text / notes likho, transform karo aur copy kar lo.</div>
@@ -534,7 +598,14 @@ img,canvas,svg,video{max-width:100%}
 
   <footer>
     <b>All-in-One Dev Toolkit</b><br>
-    Saare tools tumhare browser mein chalte hain. Admin mode se toolkit ko apne hisaab se customize karo — tools add karo, remove karo, favorites banao.
+    Saare tools tumhare browser mein chalte hain — koi sign-up nahi, sab free.
+  
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:18px">Join Our Channels</div>
+    <div class="channels-row">
+      <a href="https://whatsapp.com/channel/0029Vb8w02T7NoZxViyko72v" target="_blank" rel="noopener">📲 WhatsApp Channel</a>
+      <a href="https://t.me/buntyxahmad" target="_blank" rel="noopener">✈️ Telegram Channel</a>
+      <a href="https://t.me/buntymain" target="_blank" rel="noopener">✈️ Telegram</a>
+    </div>
   </footer>
 </div>
 
@@ -553,18 +624,24 @@ var DEFAULT_TOOLS=[
  {id:'url',icon:'🔗',emoji:'🔗',name:'URL & Case Converter',cat:'Encoding',desc:'URL encode/decode plus UPPERCASE, lowercase, Title Case aur camelCase — text transforms sab aik jagah.'},
  {id:'hash',icon:'#',emoji:'🧮',name:'Hash Generator',cat:'Dev',desc:'Text ke SHA-1, SHA-256 aur SHA-512 hashes banao — browser ke secure crypto se.'},
  {id:'time',icon:'⏱️',emoji:'⏱️',name:'Timestamp Converter',cat:'Dev',desc:'Unix timestamp ko date mein aur date ko timestamp mein badlo — current time live ke saath.'},
- {id:'lorem',icon:'¶',emoji:'✍️',name:'Lorem Ipsum Generator',cat:'Text',desc:'Design aur mockups ke liye dummy paragraphs banao — jitne chahiye utne, copy ready.'}
+ {id:'lorem',icon:'¶',emoji:'✍️',name:'Lorem Ipsum Generator',cat:'Text',desc:'Design aur mockups ke liye dummy paragraphs banao — jitne chahiye utne, copy ready.'},
+ {id:'age',icon:'🎂',emoji:'🎂',name:'Age Calculator',cat:'Generators',desc:'Date of birth likho — exact age saal, mahine, din aur total days ke sath.'},
+ {id:'bmi',icon:'⚖️',emoji:'⚖️',name:'BMI Calculator',cat:'Generators',desc:'Weight aur height se BMI nikalo — category ke sath: underweight, normal ya overweight.'},
+ {id:'percent',icon:'%',emoji:'🧮',name:'Percentage Calculator',cat:'Dev',desc:'Percentage, increase / decrease aur difference — hisaab aik click mein.'},
+ {id:'random',icon:'🎲',emoji:'🎲',name:'Random Number Generator',cat:'Generators',desc:'Min aur max ke darmiyan random numbers — jitne chahiye utne, baghair repeat ke bhi.'},
+ {id:'unit',icon:'📏',emoji:'📏',name:'Unit Converter',cat:'Dev',desc:'Length, weight aur temperature — meter, km, mile, kg, pound, °C aur °F convert karo.'},
+ {id:'stopwatch',icon:'⏱️',emoji:'⏱️',name:'Stopwatch',cat:'Generators',desc:'Simple stopwatch — start, stop, lap aur reset, milliseconds ke sath.'}
 ];
 var tools=DEFAULT_TOOLS.slice();
 var favorites=new Set();
 var currentCat='all', favOnly=false, adminMode=false, currentPassword='', uuidList=[], currentImg=null, compressedUrl=null;
 var activeTool=null;
 
-var GLYPHS={json:'{ }',base64:'64',qr:'\u25a6',password:'\u2022\u2022\u2022',words:'Aa',color:'\u25d0',image:'\u25a3',uuid:'ID',url:'\u2317',hash:'#',time:'\u25d4',lorem:'\u00b6'};
+var GLYPHS={json:'{ }',base64:'64',qr:'\u25a6',password:'\u2022\u2022\u2022',words:'Aa',color:'\u25d0',image:'\u25a3',uuid:'ID',url:'\u2317',hash:'#',time:'\u25d4',lorem:'\u00b6',age:'\u2318',bmi:'\u2696',percent:'%',random:'\u2684',unit:'\u21c4',stopwatch:'\u25d4'};
 var TILE_GRADS={
  json:'#26262b',base64:'#e4e4e7',qr:'#3f3f46',password:'#e4e4e7',words:'#26262b',
  color:'#d4d4d8',image:'#3f3f46',uuid:'#e4e4e7',url:'#26262b',hash:'#d4d4d8',
- time:'#3f3f46',lorem:'#e4e4e7'
+ time:'#3f3f46',lorem:'#e4e4e7',age:'#3f3f46',bmi:'#e4e4e7',percent:'#26262b',random:'#d4d4d8',unit:'#e4e4e7',stopwatch:'#26262b'
 };
 var CAT_GRADS={Text:'#e4e4e7',Encoding:'#3f3f46',Generators:'#26262b',Media:'#e4e4e7',Color:'#d4d4d8',Dev:'#26262b',Custom:'#e4e4e7'};
 function isDarkTile(t){var g=tileGrad(t);return g==='#26262b'||g==='#3f3f46'}
@@ -788,6 +865,26 @@ function genLorem(){
 
 /* CUSTOM */
 function customTransform(m){var ta=document.getElementById('customIn');if(m==='upper')ta.value=ta.value.toUpperCase();if(m==='lower')ta.value=ta.value.toLowerCase();if(m==='reverse')ta.value=ta.value.split('').reverse().join('')}
+
+
+/* AGE */
+function calcAge(){var v=document.getElementById('ageDob').value;var m=document.getElementById('ageOut');if(!v){m.textContent='⚠ Pehle date of birth select karo.';m.className='msg err';return}var d=new Date(v+'T00:00:00'),now=new Date();if(d>now){m.textContent='⚠ Date mustaqbil ki hai.';m.className='msg err';return}var y=now.getFullYear()-d.getFullYear(),mo=now.getMonth()-d.getMonth(),da=now.getDate()-d.getDate();if(da<0){mo--;da+=new Date(now.getFullYear(),now.getMonth(),0).getDate()}if(mo<0){y--;mo+=12}var days=Math.floor((now-d)/864e5);m.textContent='✓ Age: '+y+' saal, '+mo+' mahine, '+da+' din — total '+days.toLocaleString()+' din.';m.className='msg ok'}
+/* BMI */
+function calcBMI(){var w=parseFloat(document.getElementById('bmiW').value),h=parseFloat(document.getElementById('bmiH').value)/100,m=document.getElementById('bmiOut');if(!w||!h){m.textContent='⚠ Weight aur height dono likho.';m.className='msg err';return}var b=w/(h*h),cat=b<18.5?'Underweight':b<25?'Normal ✓':b<30?'Overweight':'Obese';m.textContent='✓ BMI: '+b.toFixed(1)+' — '+cat;m.className='msg ok'}
+/* PERCENT */
+function calcPct(){var a=parseFloat(document.getElementById('pctA').value),b=parseFloat(document.getElementById('pctB').value),m=document.getElementById('pctOut');if(isNaN(a)||isNaN(b)||b===0){m.textContent='⚠ Dono values sahi likho.';m.className='msg err';return}m.textContent='✓ '+a+' is '+(a/b*100).toFixed(2)+'% of '+b+' — aur '+b+' ka '+a+'% = '+(b*a/100).toFixed(2);m.className='msg ok'}
+/* RANDOM */
+function genRandom(){var mn=parseInt(document.getElementById('rndMin').value,10),mx=parseInt(document.getElementById('rndMax').value,10),n=parseInt(document.getElementById('rndCount').value,10);if(isNaN(mn)||isNaN(mx)||mx<=mn){document.getElementById('rndOut').textContent='⚠ Max, Min se bara hona chahiye.';return}var s=new Set();var guard=0;while(s.size<Math.min(n,mx-mn+1)&&guard++<5000){s.add(mn+Math.floor(Math.random()*(mx-mn+1)))}document.getElementById('rndOut').textContent=Array.from(s).join(', ')}
+/* UNIT */
+function convUnit(){var v=parseFloat(document.getElementById('unitVal').value),f=document.getElementById('unitFrom').value,t=document.getElementById('unitTo').value,m=document.getElementById('unitOut');if(isNaN(v)){m.textContent='⚠ Value likho.';m.className='msg err';return}var L={m:1,km:1000,mi:1609.34,ft:0.3048},W={kg:1,lb:0.453592};var out=null;if(L[f]&&L[t])out=v*L[f]/L[t];else if(W[f]&&W[t])out=v*W[f]/W[t];else if((f==='c'&&t==='f'))out=v*9/5+32;else if(f==='f'&&t==='c')out=(v-32)*5/9;else if(f===t)out=v;if(out===null){m.textContent='⚠ Ye dono units aik category ke nahi hain (length / weight / temperature alag alag).';m.className='msg err';return}m.textContent='✓ '+v+' '+f.toUpperCase()+' = '+parseFloat(out.toFixed(4))+' '+t.toUpperCase();m.className='msg ok'}
+/* STOPWATCH */
+var swT=null,swStartT=0,swElapsed=0,swLapN=0;
+function swFmt(ms){var cs=Math.floor(ms/10)%100,s=Math.floor(ms/1000)%60,mi=Math.floor(ms/60000);function p(x){return(x<10?'0':'')+x}return p(mi)+':'+p(s)+'.'+p(cs)}
+function swTick(){document.getElementById('swDisp').textContent=swFmt(swElapsed+(Date.now()-swStartT))}
+function swStart(){if(swT)return;swStartT=Date.now();swT=setInterval(swTick,31)}
+function swStop(){if(!swT)return;clearInterval(swT);swT=null;swElapsed+=Date.now()-swStartT}
+function swReset(){swStop();swElapsed=0;swLapN=0;document.getElementById('swDisp').textContent='00:00.00';document.getElementById('swLaps').textContent=''}
+function swLap(){if(!swT)return;swLapN++;var el=document.getElementById('swLaps');el.textContent+=('Lap '+swLapN+': '+swFmt(swElapsed+(Date.now()-swStartT))+'\n')}
 
 renderGrid();
 countWords();
