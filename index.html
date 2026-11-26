@@ -265,6 +265,26 @@ img,canvas,svg,video{max-width:100%}
 [data-theme="light"] .btn-dark:hover,[data-theme="light"] .btn-hero:hover{background:#27272a;border-color:#27272a;box-shadow:0 10px 24px rgba(0,0,0,.18)}
 [data-theme="light"] .hero h1 .gold{background:linear-gradient(120deg,#18181b 10%,#71717a 55%,#3f3f46 90%);-webkit-background-clip:text;background-clip:text}
 [data-theme="light"] .toast{color:#fff;border-color:#18181b}
+
+.marquee{margin:38px auto 0;max-width:900px;border-top:1px solid var(--line);padding-top:20px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.mq-track{display:flex;width:max-content;animation:mqFlow 30s linear infinite;will-change:transform}
+.marquee:hover .mq-track{animation-play-state:paused}
+.mq-set{display:flex;align-items:center}
+.mq-item{font-family:var(--display);font-style:italic;font-weight:700;font-size:21px;color:var(--ink-2);padding:0 16px;white-space:nowrap}
+.mq-brand{font-size:26px;color:var(--white)}
+.mq-star{color:var(--faint);font-size:12px}
+@keyframes mqFlow{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.mq-track{animation:none}}
+.theme-row{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 4px 0}
+.theme-cap,.theme-state{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.theme-state{color:var(--muted);min-width:40px;font-weight:700}
+.tswitch{position:relative;width:64px;height:34px;border-radius:999px;border:1px solid var(--line-2);background:var(--glass-2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);cursor:pointer;padding:0;flex:none;transition:background .3s,border-color .3s}
+.tswitch:focus-visible{outline:2px solid var(--white);outline-offset:2px}
+.ts-knob{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:var(--white);box-shadow:0 2px 8px rgba(0,0,0,.45);transition:transform .35s cubic-bezier(.55,-.15,.25,1.25)}
+.ts-ico{position:absolute;top:50%;transform:translateY(-50%);font-size:13px;line-height:1;pointer-events:none}
+.ts-moon{left:9px;color:var(--muted)}
+.ts-sun{right:8px;color:var(--faint)}
+[data-theme="light"] .ts-knob{transform:translateX(30px)}
 </style>
 </head>
 <body>
@@ -286,7 +306,7 @@ img,canvas,svg,video{max-width:100%}
     <div class="hero-actions">
       <button class="btn btn-hero" onclick="document.getElementById('toolsSection').scrollIntoView({behavior:'smooth'})">🧰 Browse Tools</button>
     </div>
-    <div class="hero-foot">JSON Formatter ✦ Base64 ✦ QR Codes ✦ Passwords ✦ Word Counter ✦ Color Picker ✦ Image Compressor ✦ UUID ✦ Hashes ✦ Timestamps ✦ Lorem Ipsum ✦ URL Tools</div>
+    <div class="marquee" aria-hidden="true"><div class="mq-track" id="mqTrack"><div class="mq-set"><span class="mq-item mq-brand">Dev Ahmad</span><span class="mq-star">✦</span><span class="mq-item">JSON Formatter</span><span class="mq-star">✦</span><span class="mq-item">Base64</span><span class="mq-star">✦</span><span class="mq-item">QR Codes</span><span class="mq-star">✦</span><span class="mq-item">Passwords</span><span class="mq-star">✦</span><span class="mq-item">Word Counter</span><span class="mq-star">✦</span><span class="mq-item">Color Picker</span><span class="mq-star">✦</span><span class="mq-item mq-brand">Dev Ahmad</span><span class="mq-star">✦</span><span class="mq-item">Image Compressor</span><span class="mq-star">✦</span><span class="mq-item">UUID</span><span class="mq-star">✦</span><span class="mq-item">Hashes</span><span class="mq-star">✦</span><span class="mq-item">Timestamps</span><span class="mq-star">✦</span><span class="mq-item">Lorem Ipsum</span><span class="mq-star">✦</span><span class="mq-item">URL Tools</span><span class="mq-star">✦</span></div><div class="mq-set"><span class="mq-item mq-brand">Dev Ahmad</span><span class="mq-star">✦</span><span class="mq-item">JSON Formatter</span><span class="mq-star">✦</span><span class="mq-item">Base64</span><span class="mq-star">✦</span><span class="mq-item">QR Codes</span><span class="mq-star">✦</span><span class="mq-item">Passwords</span><span class="mq-star">✦</span><span class="mq-item">Word Counter</span><span class="mq-star">✦</span><span class="mq-item">Color Picker</span><span class="mq-star">✦</span><span class="mq-item mq-brand">Dev Ahmad</span><span class="mq-star">✦</span><span class="mq-item">Image Compressor</span><span class="mq-star">✦</span><span class="mq-item">UUID</span><span class="mq-star">✦</span><span class="mq-item">Hashes</span><span class="mq-star">✦</span><span class="mq-item">Timestamps</span><span class="mq-star">✦</span><span class="mq-item">Lorem Ipsum</span><span class="mq-star">✦</span><span class="mq-item">URL Tools</span><span class="mq-star">✦</span></div></div></div>
   </header>
 
   <!-- TOOLBAR -->
@@ -939,6 +959,7 @@ function tkStopBg(){var c=document.getElementById('bgCanvas'),v=document.getElem
 function tkStartAnim(){
   var c=document.getElementById('bgCanvas');if(!c)return;c.hidden=false;
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
+  var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var ctx=c.getContext('2d'),W,H,pts=[];
   function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
   resize();window.addEventListener('resize',resize);
@@ -974,14 +995,15 @@ window.addEventListener('load',function(){
 
 <script>
 try{var _t=localStorage.getItem('tk_theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}
+function tkThemeSync(cur){var b=document.getElementById('themeBtn');if(b)b.setAttribute('aria-checked',cur==='light'?'true':'false');var s=document.getElementById('themeState');if(s)s.textContent=cur==='light'?'Light':'Dark';}
 function tkTheme(){
   var cur=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
   if(cur==='dark')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme','light');
   try{localStorage.setItem('tk_theme',cur);}catch(e){}
-  var b=document.getElementById('themeBtn');if(b)b.textContent=cur==='light'?'🌗 Dark Mode':'🌗 Light Mode';
+  tkThemeSync(cur);
   if(typeof tkApplyBg==='function'&&window.tkSettings&&tkSettings.bgType==='anim')tkApplyBg();
 }
-window.addEventListener('DOMContentLoaded',function(){var b=document.getElementById('themeBtn');if(b&&document.documentElement.getAttribute('data-theme')==='light')b.textContent='🌗 Dark Mode';});
+window.addEventListener('DOMContentLoaded',function(){tkThemeSync(document.documentElement.getAttribute('data-theme')==='light'?'light':'dark');});
 </script>
 </body>
 </html>
