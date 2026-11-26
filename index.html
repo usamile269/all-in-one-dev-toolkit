@@ -239,6 +239,10 @@ img,canvas,svg,video{max-width:100%}
    in normal document flow. Nothing in this page may pin it, float it or
    lift it above the cards. */
 .toolbar{position:static !important;inset:auto !important;transform:none !important;z-index:auto !important;float:none !important}
+
+.hero{position:relative;overflow:hidden}
+.hero>*{position:relative;z-index:1}
+#bgCanvas,#bgVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:.5;pointer-events:none}
 </style>
 </head>
 <body>
@@ -246,6 +250,7 @@ img,canvas,svg,video{max-width:100%}
 
   <!-- HERO -->
   <header class="hero">
+    <canvas id="bgCanvas" hidden></canvas><video id="bgVideo" hidden autoplay muted loop playsinline></video>
     <div class="hero-kicker">Developer Utilities · Admin Powered</div>
     <h1>All-in-One<br><span class="gold">Dev Toolkit</span></h1>
     <p>Har roz ke developer tools — aik hi jagah. JSON, Base64, QR, passwords, colors, images aur bohat kuch. Card par tap karo, tool khul jayega. Admin mode se naye tools add aur purane remove bhi kar sakte ho.</p>
@@ -320,7 +325,17 @@ img,canvas,svg,video{max-width:100%}
         </div>
       </div>
     </div>
-  </section>
+  
+      <div class="admin-body" style="padding-top:0">
+        <h3 style="font-size:18px;font-weight:700;margin:0 0 12px">🎬 Site Options — Header Background</h3>
+        <div class="field"><label for="bgType">Header Background Type</label>
+          <select id="bgType"><option value="none">None (plain)</option><option value="anim">Animated (live particles — video jaisa)</option><option value="video">Video URL (mp4/webm)</option></select>
+        </div>
+        <div class="field"><label for="bgUrl">Video URL (sirf Video type ke liye)</label><input type="text" id="bgUrl" placeholder="https://example.com/video.mp4"></div>
+        <button class="btn btn-dark" style="width:100%" onclick="tkSaveSettings()">💾 Save Options — Sab Ko Show Hoga</button>
+        <div class="msg" id="bgMsg" style="margin-top:8px"></div>
+      </div>
+    </section>
 
   <!-- GRID -->
   <div class="sec-head" id="toolsSection">
@@ -785,19 +800,54 @@ try{
 }catch(e){}
 </script>
 
+
+
 <script>
-/* Global tools sync — admin-added tools show for everyone */
-function tkSync(){
-  var key=sessionStorage.getItem('tk_admin_key');
-  if(!key){key=prompt('Admin key likho — tool sab visitors ko show hoga:');if(!key)return;sessionStorage.setItem('tk_admin_key',key);}
-  fetch('/api/tools',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify({tools:tools.filter(function(t){return t.custom})})})
-  .then(function(r){if(r.status===401){sessionStorage.removeItem('tk_admin_key');alert('Wrong admin key — dobara try karo.');}else if(r.ok){toast('Tool publish ho gaya — ab sab ko show hoga');}else{r.json().then(function(d){alert('Publish nahi hua: '+(d.error||r.status))})}})
-  .catch(function(){alert('Publish nahi hua — net check karo.')});
+/* Global tools sync + site settings — admin changes show for everyone */
+var tkSettings={bgType:'none',bgUrl:''};
+function tkKey(){var k=sessionStorage.getItem('tk_admin_key');if(!k){k=prompt('Admin key likho:');if(k)sessionStorage.setItem('tk_admin_key',k);}return k;}
+function tkPost(payload,okMsg){
+  var key=tkKey();if(!key)return;
+  fetch('/api/tools',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify(payload)})
+  .then(function(r){if(r.status===401){sessionStorage.removeItem('tk_admin_key');alert('Wrong admin key — dobara try karo.');}else if(r.ok){if(okMsg)toast(okMsg);}else{r.json().then(function(d){alert('Save nahi hua: '+(d.error||r.status))})}})
+  .catch(function(){alert('Save nahi hua — net check karo.')});
+}
+function tkSync(){tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},'Tool publish ho gaya — ab sab ko show hoga');}
+function tkSaveSettings(){
+  tkSettings={bgType:document.getElementById('bgType').value,bgUrl:document.getElementById('bgUrl').value.trim()};
+  tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},null);
+  var m=document.getElementById('bgMsg');if(m){m.textContent='✓ Options save ho gaye — sab visitors ko yahi background show hoga.';m.className='msg ok';}
+  tkApplyBg();
+}
+var tkAnimId=null;
+function tkStopBg(){var c=document.getElementById('bgCanvas'),v=document.getElementById('bgVideo');if(c)c.hidden=true;if(v){v.hidden=true;v.pause();}if(tkAnimId){cancelAnimationFrame(tkAnimId);tkAnimId=null;}}
+function tkStartAnim(){
+  var c=document.getElementById('bgCanvas');if(!c)return;c.hidden=false;
+  var ctx=c.getContext('2d'),W,H,pts=[];
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
+  resize();window.addEventListener('resize',resize);
+  var N=window.innerWidth<640?42:75;
+  for(var i=0;i<N;i++)pts.push({x:Math.random()*2000,y:Math.random()*800,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.8+.6});
+  (function loop(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(function(a){
+      a.x+=a.vx;a.y+=a.vy;if(a.x<0||a.x>W)a.vx*=-1;if(a.y<0||a.y>H)a.vy*=-1;
+      ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,7);ctx.fillStyle='rgba(244,244,245,.7)';ctx.fill();
+      pts.forEach(function(b){var dx=a.x-b.x,dy=a.y-b.y,d=dx*dx+dy*dy;if(d<12100){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle='rgba(161,161,170,'+(0.14*(1-d/12100))+')';ctx.stroke();}});
+    });
+    tkAnimId=requestAnimationFrame(loop);
+  })();
+}
+function tkApplyBg(){
+  tkStopBg();
+  if(tkSettings.bgType==='anim'){tkStartAnim();}
+  else if(tkSettings.bgType==='video'&&tkSettings.bgUrl){var v=document.getElementById('bgVideo');v.src=tkSettings.bgUrl;v.hidden=false;v.play().catch(function(){});}
 }
 window.addEventListener('load',function(){
   fetch('/api/tools').then(function(r){return r.json()}).then(function(d){
     (d.tools||[]).forEach(function(t){if(!tools.some(function(x){return x.id===t.id}))tools.push(t);});
-    renderGrid();
+    if(d.settings){tkSettings=d.settings;var bt=document.getElementById('bgType'),bu=document.getElementById('bgUrl');if(bt)bt.value=tkSettings.bgType||'none';if(bu)bu.value=tkSettings.bgUrl||'';}
+    renderGrid();tkApplyBg();
   }).catch(function(){});
   var _add=window.addCustomTool; window.addCustomTool=function(){_add(); if(tools.some(function(t){return t.custom}))tkSync();};
   var _rm=window.removeTool; window.removeTool=function(id){var wasCustom=tools.some(function(t){return t.id===id&&t.custom});_rm(id); if(wasCustom)tkSync();};
