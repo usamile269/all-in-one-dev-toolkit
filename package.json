@@ -1,0 +1,5 @@
+{
+  "name": "all-in-one-dev-toolkit",
+  "private": true,
+  "dependencies": { "@vercel/blob": "^1.0.0" }
+}

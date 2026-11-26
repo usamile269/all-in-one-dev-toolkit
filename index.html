@@ -773,5 +773,25 @@ function customTransform(m){var ta=document.getElementById('customIn');if(m==='u
 renderGrid();
 countWords();
 </script>
-<script>window.addEventListener('load',function(){if(/[?&]admin=1/.test(location.search)||location.hash==='#admin'){try{toggleAdmin()}catch(e){}}});</script></body>
+<script>window.addEventListener('load',function(){if(/[?&]admin=1/.test(location.search)||location.hash==='#admin'){try{toggleAdmin()}catch(e){}}});</script>
+<script>
+/* Global tools sync — admin-added tools show for everyone */
+function tkSync(){
+  var key=sessionStorage.getItem('tk_admin_key');
+  if(!key){key=prompt('Admin key likho — tool sab visitors ko show hoga:');if(!key)return;sessionStorage.setItem('tk_admin_key',key);}
+  fetch('/api/tools',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify({tools:tools.filter(function(t){return t.custom})})})
+  .then(function(r){if(r.status===401){sessionStorage.removeItem('tk_admin_key');alert('Wrong admin key — dobara try karo.');}else if(r.ok){toast('🌍 Tool publish ho gaya — ab sab ko show hoga');}else{r.json().then(function(d){alert('Publish nahi hua: '+(d.error||r.status))})}})
+  .catch(function(){alert('Publish nahi hua — net check karo.')});
+}
+window.addEventListener('load',function(){
+  fetch('/api/tools').then(function(r){return r.json()}).then(function(d){
+    (d.tools||[]).forEach(function(t){if(!tools.some(function(x){return x.id===t.id}))tools.push(t);});
+    renderGrid();
+  }).catch(function(){});
+  var _add=window.addCustomTool; window.addCustomTool=function(){_add(); if(tools.some(function(t){return t.custom}))tkSync();};
+  var _rm=window.removeTool; window.removeTool=function(id){var wasCustom=tools.some(function(t){return t.id===id&&t.custom});_rm(id); if(wasCustom)tkSync();};
+  var _cc=window.clearCustom; window.clearCustom=function(){_cc(); tkSync();};
+});
+</script>
+</body>
 </html>
