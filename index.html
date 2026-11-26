@@ -294,13 +294,13 @@ img,canvas,svg,video{max-width:100%}
 .theme-row{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 4px 0}
 .theme-cap,.theme-state{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
 .theme-state{color:var(--muted);min-width:40px;font-weight:700}
-.tswitch{position:relative;width:54px;height:28px;border-radius:999px;border:1px solid var(--line-2);background:var(--glass-2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);cursor:pointer;padding:0;flex:none;transition:background .3s,border-color .3s}
+.tswitch{position:relative;width:48px;height:24px;border-radius:999px;border:1px solid var(--line-2);background:var(--glass-2);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);cursor:pointer;padding:0;flex:none;transition:background .3s,border-color .3s}
 .tswitch:focus-visible{outline:2px solid var(--white);outline-offset:2px}
-.ts-knob{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:var(--white);box-shadow:0 2px 8px rgba(0,0,0,.45);transition:transform .35s cubic-bezier(.55,-.15,.25,1.25)}
-.ts-ico{position:absolute;top:50%;transform:translateY(-50%);font-size:11px;line-height:1;pointer-events:none}
-.ts-moon{left:7px;color:var(--muted)}
-.ts-sun{right:6px;color:var(--faint)}
-[data-theme="light"] .ts-knob{transform:translateX(27px)}
+.ts-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--white);box-shadow:0 2px 8px rgba(0,0,0,.45);transition:transform .35s cubic-bezier(.55,-.15,.25,1.25)}
+.ts-ico{position:absolute;top:50%;transform:translateY(-50%);font-size:10px;line-height:1;pointer-events:none}
+.ts-moon{left:6px;color:var(--muted)}
+.ts-sun{right:5px;color:var(--faint)}
+[data-theme="light"] .ts-knob{transform:translateX(24px)}
 
 .hero-greet{font-family:var(--display);font-style:italic;font-weight:600;font-size:19px;color:var(--muted);margin-top:16px;min-height:26px}
 </style>
@@ -638,6 +638,7 @@ img,canvas,svg,video{max-width:100%}
         <div class="btn-row" style="justify-content:center"><button class="btn btn-dark" onclick="swStart()">▶ Start</button><button class="btn" onclick="swStop()">⏸ Stop</button><button class="btn" onclick="swLap()">Lap</button><button class="btn" onclick="swReset()">Reset</button></div>
         <pre class="out" id="swLaps" style="min-height:60px"></pre>
       </div>
+
 
 
 
@@ -987,6 +988,7 @@ function tkStartAnim(){
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
+  var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var ctx=c.getContext('2d'),W,H,pts=[];
   function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
   resize();window.addEventListener('resize',resize);
@@ -1037,6 +1039,7 @@ window.addEventListener('DOMContentLoaded',function(){tkThemeSync(document.docum
 <script>
 function tkGreet(){var el=document.getElementById('greetLine');if(!el)return;var h=new Date().getHours();var g=h<5?'Working late':h<12?'Good morning':h<17?'Good afternoon':h<21?'Good evening':'Good night';el.textContent=g+' 👋 — welcome to the Toolkit by Dev Ahmad';}
 window.addEventListener('DOMContentLoaded',tkGreet);
+
 
 
 
