@@ -8,7 +8,23 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<title>All-in-One Dev Toolkit</title>
+<meta name="description" content="All-in-One Dev Toolkit by Dev Ahmad — free online developer tools: JSON formatter, Base64, QR generator, password generator, AI caption generator, AI text fixer and more. No sign-up, everything runs in your browser.">
+<meta name="keywords" content="dev toolkit, json formatter, base64, qr generator, password generator, ai caption generator, online tools, Dev Ahmad">
+<meta name="author" content="Dev Ahmad">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://all-in-one-dev-toolkit.vercel.app/">
+<meta name="theme-color" content="#0c0c0d">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧰</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="All-in-One Dev Toolkit">
+<meta property="og:title" content="All-in-One Dev Toolkit — by Dev Ahmad">
+<meta property="og:description" content="Free developer tools in one place: JSON, Base64, QR, passwords, AI tools and more. No sign-up.">
+<meta property="og:url" content="https://all-in-one-dev-toolkit.vercel.app/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="All-in-One Dev Toolkit — by Dev Ahmad">
+<meta name="twitter:description" content="Free developer tools in one place. No sign-up, runs in your browser.">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"All-in-One Dev Toolkit","url":"https://all-in-one-dev-toolkit.vercel.app/","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Dev Ahmad"}}</script>
+<title>All-in-One Dev Toolkit — Free Online Developer Tools by Dev Ahmad</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{
@@ -285,6 +301,8 @@ img,canvas,svg,video{max-width:100%}
 .ts-moon{left:9px;color:var(--muted)}
 .ts-sun{right:8px;color:var(--faint)}
 [data-theme="light"] .ts-knob{transform:translateX(30px)}
+
+.hero-greet{font-family:var(--display);font-style:italic;font-weight:600;font-size:19px;color:var(--muted);margin-top:16px;min-height:26px}
 </style>
 </head>
 <body>
@@ -295,6 +313,7 @@ img,canvas,svg,video{max-width:100%}
   <header class="hero">
     <canvas id="bgCanvas" hidden></canvas><video id="bgVideo" hidden autoplay muted loop playsinline></video>
     <div class="hero-kicker">Developer Utilities · Admin Powered</div>
+    <div class="hero-greet" id="greetLine"></div>
     <h1>All-in-One<br><span class="gold">Dev Toolkit</span></h1>
     <p>Everyday developer tools — all in one place. JSON, Base64, QR, passwords, colors, images and much more. Tap a card to open a tool. New tools are added by the admin.</p>
     <div class="hero-stats">
@@ -323,6 +342,7 @@ img,canvas,svg,video{max-width:100%}
       <button class="pill" data-cat="Media" onclick="setCat('Media',this)">Media & Image</button>
       <button class="pill" data-cat="Color" onclick="setCat('Color',this)">Color</button>
       <button class="pill" data-cat="Dev" onclick="setCat('Dev',this)">Dev Utils</button>
+      <button class="pill" data-cat="AI" onclick="setCat('AI',this)">AI Tools</button>
       <button class="pill" data-cat="Custom" onclick="setCat('Custom',this)">Custom</button>
     </div>
   </section>
@@ -348,7 +368,7 @@ img,canvas,svg,video{max-width:100%}
           <div class="field"><label for="newName">Tool Name *</label><input type="text" id="newName" placeholder="e.g. My Regex Tester"></div>
           <div class="field"><label for="newIcon">Icon / Emoji (Picture)</label><input type="text" id="newIcon" placeholder="🛠️" maxlength="4" value="🛠️"></div>
           <div class="field"><label for="newCat">Category</label>
-            <select id="newCat"><option>Text</option><option>Encoding</option><option>Generators</option><option>Media</option><option>Color</option><option>Dev</option><option selected>Custom</option></select>
+            <select id="newCat"><option>Text</option><option>Encoding</option><option>Generators</option><option>Media</option><option>Color</option><option>Dev</option><option>AI</option><option selected>Custom</option></select>
           </div>
           <div class="field"><label for="newDesc">Description *</label><textarea id="newDesc" placeholder="What does this tool do — write a short description shown on the card…"></textarea></div>
           <button class="btn btn-dark" style="width:100%" onclick="addCustomTool()">➕ Add Tool to Toolkit</button>
@@ -620,6 +640,25 @@ img,canvas,svg,video{max-width:100%}
         <pre class="out" id="swLaps" style="min-height:60px"></pre>
       </div>
 
+
+      <!-- AI CAPTION -->
+      <div class="panel" id="panel-ai-caption">
+        <label class="cat">Topic / Idea</label>
+        <textarea class="code" id="aiCapIn" placeholder="e.g. my new haircut, coffee shop opening, Eid outfit…" style="min-height:80px"></textarea>
+        <div class="btn-row"><button class="btn btn-dark" onclick="aiRun('caption')">🤖 Generate Captions</button><button class="btn" onclick="copyText(document.getElementById('aiCapOut').textContent)">Copy Result</button></div>
+        <pre class="out" id="aiCapOut" style="min-height:110px"></pre>
+        <div class="msg" id="aiCapMsg"></div>
+      </div>
+
+      <!-- AI FIX -->
+      <div class="panel" id="panel-ai-fix">
+        <label class="cat">Your Text</label>
+        <textarea class="code" id="aiFixIn" placeholder="Paste your text here — grammar, spelling and tone will be polished…"></textarea>
+        <div class="btn-row"><button class="btn btn-dark" onclick="aiRun('fix')">✍️ Fix My Text</button><button class="btn" onclick="copyText(document.getElementById('aiFixOut').textContent)">Copy Result</button></div>
+        <pre class="out" id="aiFixOut" style="min-height:110px"></pre>
+        <div class="msg" id="aiFixMsg"></div>
+      </div>
+
       <!-- CUSTOM GENERIC -->
       <div class="panel" id="panel-custom">
         <div class="admin-note" style="border-radius:10px;padding:12px;font-size:14px;line-height:1.6">⭐ This tool was added from the <b>Admin Panel</b>. Its workspace is ready — write your text / notes below, transform it and copy it.</div>
@@ -667,7 +706,7 @@ img,canvas,svg,video{max-width:100%}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
-var DEFAULT_TOOLS=[];
+var DEFAULT_TOOLS=[{id:'ai-caption',emoji:'🤖',name:'AI Caption Generator',cat:'AI',desc:'Type any topic — AI writes catchy captions with hashtags for TikTok, Instagram and WhatsApp.'},{id:'ai-fix',emoji:'✍️',name:'AI Text Fixer',cat:'AI',desc:'Paste any text — AI fixes grammar, spelling and tone and returns a polished version.'}];
 var tools=DEFAULT_TOOLS.slice();
 var favorites=new Set();
 var currentCat='all', favOnly=false, adminMode=false, currentPassword='', uuidList=[], currentImg=null, compressedUrl=null;
@@ -677,9 +716,9 @@ var GLYPHS={json:'{ }',base64:'64',qr:'\u25a6',password:'\u2022\u2022\u2022',wor
 var TILE_GRADS={
  json:'#26262b',base64:'#e4e4e7',qr:'#3f3f46',password:'#e4e4e7',words:'#26262b',
  color:'#d4d4d8',image:'#3f3f46',uuid:'#e4e4e7',url:'#26262b',hash:'#d4d4d8',
- time:'#3f3f46',lorem:'#e4e4e7',age:'#3f3f46',bmi:'#e4e4e7',percent:'#26262b',random:'#d4d4d8',unit:'#e4e4e7',stopwatch:'#26262b'
+ time:'#3f3f46',lorem:'#e4e4e7','ai-caption':'#26262b','ai-fix':'#3f3f46',age:'#3f3f46',bmi:'#e4e4e7',percent:'#26262b',random:'#d4d4d8',unit:'#e4e4e7',stopwatch:'#26262b'
 };
-var CAT_GRADS={Text:'#e4e4e7',Encoding:'#3f3f46',Generators:'#26262b',Media:'#e4e4e7',Color:'#d4d4d8',Dev:'#26262b',Custom:'#e4e4e7'};
+var CAT_GRADS={AI:'#26262b',Text:'#e4e4e7',Encoding:'#3f3f46',Generators:'#26262b',Media:'#e4e4e7',Color:'#d4d4d8',Dev:'#26262b',Custom:'#e4e4e7'};
 function isDarkTile(t){var g=tileGrad(t);return g==='#26262b'||g==='#3f3f46'}
 function tileGrad(t){return TILE_GRADS[t.id]||CAT_GRADS[t.cat]||CAT_GRADS.Custom}
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
@@ -961,6 +1000,7 @@ function tkStartAnim(){
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
+  var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var ctx=c.getContext('2d'),W,H,pts=[];
   function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
   resize();window.addEventListener('resize',resize);
@@ -995,7 +1035,8 @@ window.addEventListener('load',function(){
 </script>
 
 <script>
-try{var _t=localStorage.getItem('tk_theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}
+try{var _t=localStorage.getItem('tk_theme');if(_t==='light')document.documentElement.setAttribute('data-theme','light');else if(!_t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)document.documentElement.setAttribute('data-theme','light');}catch(e){}
+try{var _mq=window.matchMedia('(prefers-color-scheme: light)');if(_mq&&_mq.addEventListener)_mq.addEventListener('change',function(e){var saved=null;try{saved=localStorage.getItem('tk_theme');}catch(_){}if(saved)return;if(e.matches)document.documentElement.setAttribute('data-theme','light');else document.documentElement.removeAttribute('data-theme');tkThemeSync(e.matches?'light':'dark');});}catch(e){}
 function tkThemeSync(cur){var b=document.getElementById('themeBtn');if(b)b.setAttribute('aria-checked',cur==='light'?'true':'false');var s=document.getElementById('themeState');if(s)s.textContent=cur==='light'?'Light':'Dark';}
 function tkTheme(){
   var cur=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
@@ -1005,6 +1046,26 @@ function tkTheme(){
   if(typeof tkApplyBg==='function'&&window.tkSettings&&tkSettings.bgType==='anim')tkApplyBg();
 }
 window.addEventListener('DOMContentLoaded',function(){tkThemeSync(document.documentElement.getAttribute('data-theme')==='light'?'light':'dark');});
+</script>
+
+<script>
+function tkGreet(){var el=document.getElementById('greetLine');if(!el)return;var h=new Date().getHours();var g=h<5?'Working late':h<12?'Good morning':h<17?'Good afternoon':h<21?'Good evening':'Good night';el.textContent=g+' 👋 — welcome to the Toolkit by Dev Ahmad';}
+window.addEventListener('DOMContentLoaded',tkGreet);
+
+function aiRun(mode){
+  var inp=document.getElementById(mode==='caption'?'aiCapIn':'aiFixIn');
+  var out=document.getElementById(mode==='caption'?'aiCapOut':'aiFixOut');
+  var msg=document.getElementById(mode==='caption'?'aiCapMsg':'aiFixMsg');
+  var text=(inp.value||'').trim();
+  if(!text){msg.textContent='⚠ Write something first.';return}
+  msg.textContent='⏳ AI is working…';out.textContent='';
+  fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:mode,text:text})})
+  .then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d}})})
+  .then(function(x){
+    if(!x.ok){msg.textContent=x.d&&x.d.error==='AI_NOT_CONFIGURED'?'⚠ AI is not switched on yet — the admin needs to add the free GROQ_API_KEY in Vercel.':'⚠ '+(x.d&&x.d.error?x.d.error:'AI request failed.');return}
+    out.textContent=x.d.result||'';msg.textContent='✓ Done — copy and use it anywhere.';
+  }).catch(function(){msg.textContent='⚠ Network error — try again.'});
+}
 </script>
 </body>
 </html>
