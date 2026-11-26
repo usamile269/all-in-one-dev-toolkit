@@ -307,7 +307,7 @@ img,canvas,svg,video{max-width:100%}
 .theme-btn{width:32px;height:32px;display:grid;place-items:center;background:var(--panel-3);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:15px;color:var(--ink-2);transition:background .15s,border-color .15s,color .15s;flex-shrink:0}
 .theme-btn:hover{background:var(--glass-3);border-color:var(--line-2);color:var(--ink)}
 
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 4px 0}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:7px 4px 0}
 .tb-brand{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--faint)}
 .nav-status{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .status-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.45);animation:livePulse 2.2s infinite}
@@ -666,6 +666,7 @@ img,canvas,svg,video{max-width:100%}
 
 
 
+
       <!-- CUSTOM GENERIC -->
       <div class="panel" id="panel-custom">
         <div class="admin-note" style="border-radius:10px;padding:12px;font-size:14px;line-height:1.6">⭐ This tool was added from the <b>Admin Panel</b>. Its workspace is ready — write your text / notes below, transform it and copy it.</div>
@@ -1001,6 +1002,8 @@ function tkSaveSettings(){
   tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
   var _mt=document.getElementById('mntToggle'),_mm=document.getElementById('mntMsg'),_ga=document.getElementById('gaId');
   tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
+  var _mt=document.getElementById('mntToggle'),_mm=document.getElementById('mntMsg'),_ga=document.getElementById('gaId');
+  tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
   tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},null);
   var m=document.getElementById('bgMsg');if(m){m.textContent='✓ Options saved — all visitors will see this background.';m.className='msg ok';}
   tkApplyBg();
@@ -1009,6 +1012,7 @@ var tkAnimId=null;
 function tkStopBg(){var c=document.getElementById('bgCanvas'),v=document.getElementById('bgVideo');if(c)c.hidden=true;if(v){v.hidden=true;v.pause();}if(tkAnimId){cancelAnimationFrame(tkAnimId);tkAnimId=null;}}
 function tkStartAnim(){
   var c=document.getElementById('bgCanvas');if(!c)return;c.hidden=false;
+  var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
@@ -1114,6 +1118,7 @@ window.addEventListener('load',function(){
     if(s.maintenance&&!isAdmin){var ov=document.getElementById('mntOverlay');if(ov){var tx=document.getElementById('mntText');if(tx&&s.maintMsg)tx.textContent=s.maintMsg;ov.hidden=false;document.body.style.overflow='hidden';}}
   }).catch(function(){var dot=document.getElementById('liveDot');if(dot)dot.classList.add('off');var lt=document.getElementById('liveTxt');if(lt)lt.textContent='Offline';});
 });
+
 
 </script>
 </body>
