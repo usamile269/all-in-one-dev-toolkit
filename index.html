@@ -247,6 +247,17 @@ img,canvas,svg,video{max-width:100%}
 .channels-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px 0 4px}
 .channels-row a{border:1px solid var(--line-2);background:var(--glass-2);color:var(--ink);border-radius:999px;padding:10px 18px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .channels-row a:hover{border-color:rgba(255,255,255,.35)}
+
+.community{max-width:880px;margin:60px auto 0;text-align:left}
+.community .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.community h2{font-family:var(--display);font-size:clamp(32px,5vw,44px);font-weight:700;margin:12px 0 10px;color:var(--ink)}
+.community p{color:var(--muted);font-size:16px;line-height:1.6;margin:0;max-width:560px}
+.comm-card{display:flex;align-items:center;gap:16px;background:var(--glass);border:1px solid var(--line);border-left:3px solid var(--acc,#3f3f46);border-radius:18px;padding:18px 20px;margin-top:14px;text-decoration:none;color:var(--ink);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);transition:border-color .18s ease,transform .18s ease}
+.comm-card:hover{transform:translateY(-2px);border-color:var(--line-3)}
+.comm-ico{width:56px;height:56px;flex:0 0 56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;background:var(--tilebg,rgba(255,255,255,.05))}
+.comm-txt b{display:block;font-size:19px;font-weight:700}
+.comm-txt i{font-style:normal;color:var(--muted);font-family:var(--mono);font-size:13px}
+.comm-arrow{margin-left:auto;color:var(--muted);font-size:18px}
 </style>
 </head>
 <body>
@@ -347,6 +358,7 @@ img,canvas,svg,video{max-width:100%}
     <p id="showingCount"></p>
   </div>
   <section class="grid" id="toolGrid"></section>
+    <div id="emptyNote" hidden style="text-align:center;color:var(--muted);padding:34px 10px;font-size:15px">Abhi koi tool nahi hai — admin jald new tools add karega. 👇 Channels join kar lo, updates wahan milenge.</div>
   <div class="empty" id="emptyState">😕 Koi tool nahi mila. Search badlo, category change karo, ya Admin Panel se naya tool add kar lo.</div>
 
   <!-- WORKSPACE -->
@@ -596,42 +608,38 @@ img,canvas,svg,video{max-width:100%}
     </div>
   </section>
 
+  <section class="community">
+    <div class="eyebrow">Stay Connected</div>
+    <h2>Join the Community</h2>
+    <p>New tools, updates aur announcements sabse pehle milein.</p>
+    <a class="comm-card" style="--acc:#2aabee" href="https://t.me/buntymain" target="_blank" rel="noopener">
+      <span class="comm-ico" style="--tilebg:rgba(42,171,238,.14);background:rgba(42,171,238,.14)">✈️</span>
+      <span class="comm-txt"><b>Telegram Channel</b><i>@buntymain</i></span>
+      <span class="comm-arrow">↗</span>
+    </a>
+    <a class="comm-card" style="--acc:#25d366" href="https://whatsapp.com/channel/0029Vb8w02T7NoZxViyko72v" target="_blank" rel="noopener">
+      <span class="comm-ico" style="--tilebg:rgba(37,211,102,.12);background:rgba(37,211,102,.12)">💬</span>
+      <span class="comm-txt"><b>WhatsApp Channel</b><i>Bunty Official</i></span>
+      <span class="comm-arrow">↗</span>
+    </a>
+    <a class="comm-card" href="https://t.me/buntyxahmad" target="_blank" rel="noopener">
+      <span class="comm-ico">🧑‍💻</span>
+      <span class="comm-txt"><b>Developer</b><i>@buntyxahmad</i></span>
+      <span class="comm-arrow">↗</span>
+    </a>
+  </section>
+
   <footer>
     <b>All-in-One Dev Toolkit</b><br>
     Saare tools tumhare browser mein chalte hain — koi sign-up nahi, sab free.
   
-    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:18px">Join Our Channels</div>
-    <div class="channels-row">
-      <a href="https://whatsapp.com/channel/0029Vb8w02T7NoZxViyko72v" target="_blank" rel="noopener">📲 WhatsApp Channel</a>
-      <a href="https://t.me/buntyxahmad" target="_blank" rel="noopener">✈️ Telegram Channel</a>
-      <a href="https://t.me/buntymain" target="_blank" rel="noopener">✈️ Telegram</a>
-    </div>
   </footer>
 </div>
 
 <div class="toast" id="toast">Copied!</div>
 
 <script>
-var DEFAULT_TOOLS=[
- {id:'json',icon:'{ }',emoji:'🧾',name:'JSON Formatter',cat:'Dev',desc:'JSON ko format, beautify, minify aur validate karo. Galat JSON mein error bhi pakad ke deta hai.'},
- {id:'base64',icon:'64',emoji:'🔐',name:'Base64 Encode / Decode',cat:'Encoding',desc:'Text ko Base64 mein encode karo ya Base64 ko wapas readable text mein decode karo — aik click mein.'},
- {id:'qr',icon:'▦',emoji:'📱',name:'QR Code Generator',cat:'Generators',desc:'Kisi bhi link, number ya text ka QR code banao, size choose karo aur PNG download kar lo.'},
- {id:'password',icon:'•••',emoji:'🔑',name:'Password Generator',cat:'Generators',desc:'Strong random passwords banao — length, symbols, numbers sab control tumhare haath mein, strength meter ke saath.'},
- {id:'words',icon:'Aa',emoji:'📝',name:'Word Counter',cat:'Text',desc:'Words, characters, sentences, paragraphs aur reading time — likhte hi live counting.'},
- {id:'color',icon:'🎨',emoji:'🎨',name:'Color Picker',cat:'Color',desc:'Color chuno aur HEX, RGB, HSL formats aik saath pao — shades ke saath, copy ready.'},
- {id:'image',icon:'🖼️',emoji:'🗜️',name:'Image Compressor',cat:'Media',desc:'Image ka size quality slider se kam karo — original vs compressed comparison aur direct download.'},
- {id:'uuid',icon:'ID',emoji:'🆔',name:'UUID Generator',cat:'Generators',desc:'Unique UUIDs banao — aik aik karke ya aik saath 10, copy ready format mein.'},
- {id:'url',icon:'🔗',emoji:'🔗',name:'URL & Case Converter',cat:'Encoding',desc:'URL encode/decode plus UPPERCASE, lowercase, Title Case aur camelCase — text transforms sab aik jagah.'},
- {id:'hash',icon:'#',emoji:'🧮',name:'Hash Generator',cat:'Dev',desc:'Text ke SHA-1, SHA-256 aur SHA-512 hashes banao — browser ke secure crypto se.'},
- {id:'time',icon:'⏱️',emoji:'⏱️',name:'Timestamp Converter',cat:'Dev',desc:'Unix timestamp ko date mein aur date ko timestamp mein badlo — current time live ke saath.'},
- {id:'lorem',icon:'¶',emoji:'✍️',name:'Lorem Ipsum Generator',cat:'Text',desc:'Design aur mockups ke liye dummy paragraphs banao — jitne chahiye utne, copy ready.'},
- {id:'age',icon:'🎂',emoji:'🎂',name:'Age Calculator',cat:'Generators',desc:'Date of birth likho — exact age saal, mahine, din aur total days ke sath.'},
- {id:'bmi',icon:'⚖️',emoji:'⚖️',name:'BMI Calculator',cat:'Generators',desc:'Weight aur height se BMI nikalo — category ke sath: underweight, normal ya overweight.'},
- {id:'percent',icon:'%',emoji:'🧮',name:'Percentage Calculator',cat:'Dev',desc:'Percentage, increase / decrease aur difference — hisaab aik click mein.'},
- {id:'random',icon:'🎲',emoji:'🎲',name:'Random Number Generator',cat:'Generators',desc:'Min aur max ke darmiyan random numbers — jitne chahiye utne, baghair repeat ke bhi.'},
- {id:'unit',icon:'📏',emoji:'📏',name:'Unit Converter',cat:'Dev',desc:'Length, weight aur temperature — meter, km, mile, kg, pound, °C aur °F convert karo.'},
- {id:'stopwatch',icon:'⏱️',emoji:'⏱️',name:'Stopwatch',cat:'Generators',desc:'Simple stopwatch — start, stop, lap aur reset, milliseconds ke sath.'}
-];
+var DEFAULT_TOOLS=[];
 var tools=DEFAULT_TOOLS.slice();
 var favorites=new Set();
 var currentCat='all', favOnly=false, adminMode=false, currentPassword='', uuidList=[], currentImg=null, compressedUrl=null;
@@ -944,7 +952,7 @@ window.addEventListener('load',function(){
   fetch('/api/tools').then(function(r){return r.json()}).then(function(d){
     (d.tools||[]).forEach(function(t){if(!tools.some(function(x){return x.id===t.id}))tools.push(t);});
     if(d.settings){tkSettings=d.settings;var bt=document.getElementById('bgType'),bu=document.getElementById('bgUrl');if(bt)bt.value=tkSettings.bgType||'none';if(bu)bu.value=tkSettings.bgUrl||'';}
-    renderGrid();tkApplyBg();
+    renderGrid();tkApplyBg();var en=document.getElementById('emptyNote');if(en)en.hidden=tools.length>0;
   }).catch(function(){});
   var _add=window.addCustomTool; window.addCustomTool=function(){_add(); if(tools.some(function(t){return t.custom}))tkSync();};
   var _rm=window.removeTool; window.removeTool=function(id){var wasCustom=tools.some(function(t){return t.id===id&&t.custom});_rm(id); if(wasCustom)tkSync();};
