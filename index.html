@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="color-scheme" content="light"/>
+<link rel="icon" href="data:,"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,600;0,700;0,800;0,900;1,800;1,900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<title>All-in-One Dev Toolkit</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#ffffff;
+  --grey-bg:#f4f4f4;
+  --surface:#ffffff;
+  --surface-2:#f7f7f7;
+  --ink:#0a0a0a;
+  --ink-2:#333333;
+  --muted:#6f6f6f;
+  --faint:#a3a3a3;
+  --line:#e4e4e4;
+  --line-2:#c8c8c8;
+  --black:#0a0a0a;
+  --black-2:#262626;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 1px 3px rgba(0,0,0,.04);
+  --shadow-lg:0 18px 36px rgba(0,0,0,.12),0 3px 8px rgba(0,0,0,.06);
+  --display:'Archivo',system-ui,-apple-system,sans-serif;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{margin:0;color:var(--ink);font-family:var(--sans);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:clip;font-size:15.5px;line-height:1.55}
+button,[role="button"],select,input,textarea{font:inherit}
+button,select,input[type="text"],input[type="number"],input[type="search"]{min-height:44px}
+a{color:inherit}
+::selection{background:var(--black);color:#fff}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 64px}
+
+/* HERO — black editorial panel */
+.hero{background:var(--black);background-image:radial-gradient(rgba(255,255,255,.13) 1px,transparent 1.5px);background-size:22px 22px;border:1px solid var(--black);border-radius:16px;padding:46px 40px 36px;box-shadow:var(--shadow-lg);color:#fff}
+.hero-kicker{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#d6d6d6;background:transparent;border:1px solid #3d3d3d;padding:7px 13px;border-radius:999px}
+.hero h1{font-family:var(--display);font-size:clamp(38px,5.6vw,58px);font-weight:900;line-height:1.02;letter-spacing:-.03em;margin:20px 0 14px;max-width:680px;color:#fff;text-transform:none}
+.hero h1 .gold{font-style:italic;font-weight:800;color:#a8a8a8}
+.hero p{margin:0;max-width:640px;font-size:16px;line-height:1.65;color:#c9c9c9}
+.hero-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.chip{background:transparent;border:1px solid #3d3d3d;padding:7px 13px;border-radius:999px;font-size:13px;font-weight:600;color:#d6d6d6}
+.chip:first-child{background:#fff;border-color:#fff;color:var(--black)}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.hero-foot{margin-top:30px;border-top:1px solid #2b2b2b;padding-top:16px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a8a8a;line-height:2}
+
+/* BUTTONS */
+.btn{border:1px solid var(--line-2);background:var(--surface);color:var(--ink);padding:10px 16px;border-radius:10px;font-weight:600;font-size:14.5px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;justify-content:center;min-height:44px;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease,transform .15s ease}
+.btn:hover{border-color:var(--black);box-shadow:var(--shadow)}
+.btn:active{transform:scale(.98)}
+.btn-dark{background:var(--black);color:#fff;border-color:var(--black)}
+.btn-dark:hover{background:var(--black-2);border-color:var(--black-2);box-shadow:0 8px 18px rgba(0,0,0,.22)}
+.btn-hero{background:#fff;color:var(--black);border-color:#fff}
+.btn-hero:hover{background:#e8e8e8;border-color:#e8e8e8;box-shadow:0 8px 18px rgba(0,0,0,.35)}
+.btn-hero-outline{background:transparent;color:#fff;border-color:#555}
+.btn-hero-outline:hover{border-color:#fff;box-shadow:none}
+.btn-danger{background:var(--black);color:#fff;border-color:var(--black)}
+.btn-danger:hover{background:var(--black-2);border-color:var(--black-2)}
+.btn-sm{min-height:38px;padding:7px 12px;font-size:13px;border-radius:8px}
+.btn-ghost{background:transparent;border-color:transparent;box-shadow:none}
+.btn-ghost:hover{border-color:var(--line-2)}
+.btn:focus-visible,.pill:focus-visible,.fav-btn:focus-visible,.del-btn:focus-visible,.swatch:focus-visible{outline:2px solid var(--black);outline-offset:2px}
+
+/* SEARCH + FILTERS — solid white static block in normal document flow.
+   NO sticky/fixed/absolute positioning, NO transform, NO z-index and
+   NO backdrop blur anywhere: it scrolls away with the page like any
+   section and can never float over the tool cards. */
+.toolbar{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);
+  position:static !important;top:auto !important;right:auto !important;bottom:auto !important;left:auto !important;inset:auto !important;
+  transform:none !important;z-index:auto !important;float:none !important}
+.search-row{display:flex;gap:10px;flex-wrap:wrap}
+.search-box{flex:1;min-width:220px;display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--line-2);border-radius:10px;padding:0 14px;transition:border-color .15s,box-shadow .15s}
+.search-box:focus-within{border-color:var(--black);box-shadow:0 0 0 3px rgba(0,0,0,.12)}
+.search-box span{font-size:17px}
+.search-box input{border:0;outline:0;background:transparent;width:100%;color:var(--ink);min-height:46px;font-weight:500}
+.search-box input::placeholder{color:var(--faint)}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pill{border:1.5px solid var(--line);background:var(--grey-bg);color:var(--ink-2);border-radius:999px;padding:8px 15px;font-weight:600;font-size:13px;cursor:pointer;min-height:38px;transition:background .15s ease,border-color .15s ease,color .15s ease}
+.pill:hover{border-color:var(--black);background:var(--surface)}
+.pill.active{background:var(--black);color:#fff;border-color:var(--black)}
+.admin-on{background:var(--black) !important;color:#fff !important;border-color:var(--black) !important;box-shadow:inset 0 0 0 2px #fff,0 0 0 1px var(--black) !important}
+
+/* ADMIN PANEL */
+.admin-panel{display:none;margin-top:18px;border:1px solid var(--line);background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.admin-panel.open{display:block;animation:pop .25s ease both}
+.admin-head{background:var(--grey-bg);color:var(--ink);padding:18px 20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line)}
+.admin-head h2{font-family:var(--display);font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0}
+.admin-head p{margin:4px 0 0;color:var(--muted);font-size:13.5px}
+.admin-body{padding:18px 20px 20px}
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:760px){.admin-grid{grid-template-columns:1fr}}
+.field label{display:block;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 12px;outline:none;transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--black);box-shadow:0 0 0 3px rgba(0,0,0,.12)}
+.field textarea{min-height:78px;resize:vertical}
+.field{margin-bottom:12px}
+.admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.stat{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-family:var(--display);font-weight:900;font-size:28px;line-height:1.1;color:var(--ink);letter-spacing:-.02em}
+.stat span{font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.admin-note{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:13.5px;line-height:1.65;color:var(--ink-2)}
+
+/* SECTION HEADS */
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:40px 2px 16px;flex-wrap:wrap}
+.sec-head h2{font-family:var(--display);font-size:28px;font-weight:900;letter-spacing:-.025em;margin:0;line-height:1.12}
+.sec-head p{margin:0;color:var(--muted);font-size:14px;font-weight:500}
+
+/* TOOL GRID */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.tool-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;position:relative;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);animation:rise .35s ease both;transition:box-shadow .18s ease,border-color .18s ease,transform .18s ease;height:100%}
+.tool-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:#b5b5b5}
+.tool-top{display:flex;gap:13px;align-items:flex-start;min-width:0}
+.tool-pic{width:52px;height:52px;flex:0 0 52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:17px;font-weight:700;letter-spacing:-.03em;border:1px solid var(--line)}
+.tile-dark{color:#fff;border-color:#0a0a0a}
+.tile-light{color:var(--ink)}
+.tool-card h3{font-family:var(--display);font-size:17.5px;font-weight:800;letter-spacing:-.015em;line-height:1.25;margin:2px 0 3px;overflow-wrap:break-word;color:var(--ink)}
+.cat{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+.cat::before{content:"";width:7px;height:7px;border-radius:1px;background:var(--black);flex:0 0 7px}
+.ws-head .cat::before,.panel .cat::before{display:none}
+.tool-desc{color:var(--muted);font-size:14px;line-height:1.55;margin:0;flex:1}
+.card-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.open-btn{flex:1}
+.fav-btn{width:44px;height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-size:18px;color:#b0b0b0;transition:all .15s ease}
+.fav-btn:hover{border-color:var(--black);color:var(--black)}
+.fav-btn.active{background:var(--black);color:#fff;border-color:var(--black)}
+.del-btn{display:none;position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:999px;border:0;background:var(--black);color:#fff;font-weight:700;cursor:pointer;font-size:15px;line-height:1;box-shadow:0 4px 10px rgba(0,0,0,.3);z-index:2}
+body.admin-mode .del-btn{display:flex;align-items:center;justify-content:center}
+body.admin-mode .tool-card{border:1.5px dashed rgba(0,0,0,.55)}
+.custom-badge{font-size:11px;font-weight:700;background:var(--grey-bg);color:var(--ink);padding:4px 8px;border-radius:999px}
+.empty{display:none;background:var(--surface);border:2px dashed var(--line-2);border-radius:16px;padding:32px;text-align:center;color:var(--muted);font-weight:500}
+.empty.show{display:block}
+
+/* WORKSPACE */
+.workspace{display:none;margin-top:26px;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.workspace.open{display:block;animation:pop .25s ease both}
+.ws-head{padding:20px;border-bottom:2px solid var(--black);display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;background:var(--surface)}
+.ws-head .tool-pic{width:52px;height:52px;flex-basis:52px;font-size:17px;border-radius:10px}
+.ws-head h2{font-family:var(--display);font-size:25px;font-weight:900;letter-spacing:-.025em;margin:0;line-height:1.15}
+.ws-head p{margin:6px 0 0;color:var(--muted);line-height:1.55;max-width:640px;font-size:14.5px}
+.ws-body{padding:20px}
+.panel{display:none}.panel.active{display:block;animation:pop .2s ease both}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.two{grid-template-columns:1fr}}
+textarea.code,input.txt,select.txt{width:100%;border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:10px;padding:12px;outline:none;transition:border-color .15s,box-shadow .15s}
+textarea.code:focus,input.txt:focus,select.txt:focus{border-color:var(--black);box-shadow:0 0 0 3px rgba(0,0,0,.12)}
+textarea.code{min-height:150px;resize:vertical;font-family:var(--mono);font-size:13px;line-height:1.6}
+textarea.code::placeholder,input.txt::placeholder{color:var(--faint)}
+pre.out{background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line);border-radius:10px;padding:15px;overflow:auto;min-height:150px;margin:0;font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word;font-family:var(--mono)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.msg{font-size:13.5px;font-weight:600;min-height:20px}
+.msg.ok{color:var(--ink)}.msg.err{color:#4d4d4d;font-style:italic}
+label.chk{display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;min-height:44px;font-weight:600;font-size:14px;transition:border-color .15s}
+label.chk:hover{border-color:var(--black)}
+label.chk input{width:19px;height:19px;accent-color:var(--black)}
+.checks{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+input[type="range"]{width:100%;accent-color:var(--black);height:28px}
+input[type="color"]{width:100%;height:64px;border:1.5px solid var(--line-2);border-radius:10px;background:var(--surface);padding:6px;cursor:pointer}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+@media(max-width:640px){.kv{grid-template-columns:1fr 1fr}}
+.kv div{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:13px}
+.kv b{display:block;font-family:var(--display);font-size:23px;font-weight:900;letter-spacing:-.02em;color:var(--ink)}
+.kv span{font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.07em}
+.color-row{display:flex;gap:8px;align-items:center;background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:8px}
+.color-row code{flex:1;font-size:13px;word-break:break-all;font-weight:600;font-family:var(--mono);color:var(--ink-2)}
+.swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.swatch{width:52px;height:52px;border-radius:12px;border:1px solid var(--line-2);cursor:pointer;transition:transform .15s ease;box-shadow:var(--shadow)}
+.swatch:hover{transform:scale(1.06)}
+#qrBox{background:#fff;padding:16px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;min-width:180px;min-height:180px;box-shadow:var(--shadow);border:1px solid var(--line-2)}
+#qrBox img,#qrBox canvas{max-width:100%}
+.drop{border:2px dashed var(--line-2);border-radius:12px;padding:26px;text-align:center;background:var(--surface-2);cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover{border-color:var(--black);background:var(--grey-bg)}
+.drop p{color:var(--muted);margin:6px 0 0;line-height:1.5}
+.img-prev{max-width:100%;border-radius:10px;border:1px solid var(--line);margin-top:10px;box-shadow:var(--shadow)}
+.strength{height:10px;background:#e5e5e5;border-radius:999px;overflow:hidden}
+.strength i{display:block;height:100%;width:0;background:var(--black);transition:width .25s ease}
+.pwd-out{font-family:var(--mono);font-size:16px;font-weight:600;word-break:break-all;background:var(--surface-2);color:var(--ink);border:1px solid var(--line-2);border-radius:10px;padding:15px;letter-spacing:.02em}
+.hash-out{font-family:var(--mono);font-size:12px;word-break:break-all;background:var(--surface-2);color:var(--ink-2);border:1.5px solid var(--line);border-radius:10px;padding:11px;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--black);color:#fff;padding:12px 20px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:60;box-shadow:0 12px 28px rgba(0,0,0,.3);max-width:90vw;text-align:center;border:1px solid #2b2b2b}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{margin-top:40px;border-top:1px solid var(--line);padding-top:22px;text-align:center;color:var(--muted);font-size:13.5px;line-height:1.7}
+footer b{font-family:var(--display);font-size:16px;font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+.hidden-file{display:none}
+
+/* RESPONSIVE FIT — mobile & desktop, nothing overlaps, nothing scrolls sideways */
+img,canvas,svg,video{max-width:100%}
+@media(max-width:640px){
+  .wrap{padding:16px 12px 44px}
+  .hero{padding:28px 20px 26px;border-radius:14px}
+  .hero h1{font-size:clamp(32px,9.5vw,42px)}
+  .hero p{font-size:15px}
+  .hero-foot{margin-top:22px}
+  .toolbar{padding:13px;border-radius:14px}
+  .search-row{flex-direction:column;align-items:stretch}
+  .search-box{min-width:0;width:100%}
+  .search-row .btn{width:100%}
+  .pills{gap:7px}
+  .pill{padding:7px 12px;font-size:12px}
+  .sec-head{margin:28px 2px 12px}
+  .sec-head h2{font-size:24px}
+  .grid{grid-template-columns:1fr;gap:12px}
+  .tool-card{padding:16px}
+  .ws-head{padding:16px}
+  .ws-head h2{font-size:22px}
+  .ws-body{padding:16px}
+  .admin-head,.admin-body{padding-left:16px;padding-right:16px}
+  .admin-stats{grid-template-columns:repeat(3,1fr);gap:7px}
+  .stat b{font-size:22px}
+  .btn-row .btn{flex:1 1 auto}
+}
+@media(max-width:380px){
+  .kv{grid-template-columns:1fr 1fr}
+  .admin-stats{grid-template-columns:1fr 1fr 1fr}
+  .stat b{font-size:19px}
+  .stat span{font-size:9px}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  html{scroll-behavior:auto}
+}
+
+/* FINAL SAFETY OVERRIDE — the search/filter panel is a plain static block
+   in normal document flow. Nothing in this page may pin it, float it or
+   lift it above the cards. */
+.toolbar{position:static !important;inset:auto !important;transform:none !important;z-index:auto !important;float:none !important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-kicker">Developer Utilities · Admin Powered</div>
+    <h1>All-in-One<br><span class="gold">Dev Toolkit</span></h1>
+    <p>Har roz ke developer tools — aik hi jagah. JSON, Base64, QR, passwords, colors, images aur bohat kuch. Card par tap karo, tool khul jayega. Admin mode se naye tools add aur purane remove bhi kar sakte ho.</p>
+    <div class="hero-stats">
+      <span class="chip" id="chipTotal">12 Tools</span>
+      <span class="chip">100% Free</span>
+      <span class="chip">No Sign-up</span>
+      <span class="chip">Works Offline-ish in Browser</span>
+    </div>
+    <div class="hero-actions">
+      <button class="btn btn-hero" onclick="document.getElementById('toolsSection').scrollIntoView({behavior:'smooth'})">🧰 Browse Tools</button>
+      <button class="btn btn-hero-outline" id="adminToggleTop" onclick="toggleAdmin()">⚙️ Open Admin Panel</button>
+    </div>
+    <div class="hero-foot">JSON Formatter ✦ Base64 ✦ QR Codes ✦ Passwords ✦ Word Counter ✦ Color Picker ✦ Image Compressor ✦ UUID ✦ Hashes ✦ Timestamps ✦ Lorem Ipsum ✦ URL Tools</div>
+  </header>
+
+  <!-- TOOLBAR -->
+  <section class="toolbar" aria-label="Search and filters">
+    <div class="search-row">
+      <div class="search-box"><span>🔎</span><input type="search" id="searchInput" placeholder="Search tools… JSON, QR, password, color…" aria-label="Search tools"></div>
+      <button class="btn" id="favFilterBtn" onclick="toggleFavFilter()">★ Favorites</button>
+      <button class="btn btn-dark" id="adminToggleBtn" onclick="toggleAdmin()">⚙️ Admin Mode</button>
+    </div>
+    <div class="pills" id="catPills">
+      <button class="pill active" data-cat="all" onclick="setCat('all',this)">All Tools</button>
+      <button class="pill" data-cat="Text" onclick="setCat('Text',this)">Text</button>
+      <button class="pill" data-cat="Encoding" onclick="setCat('Encoding',this)">Encoding</button>
+      <button class="pill" data-cat="Generators" onclick="setCat('Generators',this)">Generators</button>
+      <button class="pill" data-cat="Media" onclick="setCat('Media',this)">Media & Image</button>
+      <button class="pill" data-cat="Color" onclick="setCat('Color',this)">Color</button>
+      <button class="pill" data-cat="Dev" onclick="setCat('Dev',this)">Dev Utils</button>
+      <button class="pill" data-cat="Custom" onclick="setCat('Custom',this)">Custom</button>
+    </div>
+  </section>
+
+  <!-- ADMIN PANEL -->
+  <section class="admin-panel" id="adminPanel" aria-label="Admin panel">
+    <div class="admin-head">
+      <div>
+        <h2>⚙️ Powerful Admin System</h2>
+        <p>Admin mode ON hai — naye tools add karo, cards se tools remove karo, pura toolkit control karo.</p>
+      </div>
+      <button class="btn btn-hero" onclick="toggleAdmin()">Exit Admin</button>
+    </div>
+    <div class="admin-body">
+      <div class="admin-stats">
+        <div class="stat"><b id="statTotal">12</b><span>Total Tools</span></div>
+        <div class="stat"><b id="statCustom">0</b><span>Custom Added</span></div>
+        <div class="stat"><b id="statFav">0</b><span>Favorites</span></div>
+      </div>
+      <div class="admin-grid">
+        <div>
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 12px">➕ Add New Tool</h3>
+          <div class="field"><label for="newName">Tool Name *</label><input type="text" id="newName" placeholder="e.g. My Regex Tester"></div>
+          <div class="field"><label for="newIcon">Icon / Emoji (Picture)</label><input type="text" id="newIcon" placeholder="🛠️" maxlength="4" value="🛠️"></div>
+          <div class="field"><label for="newCat">Category</label>
+            <select id="newCat"><option>Text</option><option>Encoding</option><option>Generators</option><option>Media</option><option>Color</option><option>Dev</option><option selected>Custom</option></select>
+          </div>
+          <div class="field"><label for="newDesc">Description *</label><textarea id="newDesc" placeholder="Is tool se kya hoga — short description likho jo card par nazar aye…"></textarea></div>
+          <button class="btn btn-dark" style="width:100%" onclick="addCustomTool()">➕ Add Tool to Toolkit</button>
+          <div class="msg" id="adminMsg" style="margin-top:8px"></div>
+        </div>
+        <div>
+          <h3 style="font-size:18px;font-weight:700;margin:0 0 12px">🗑️ Remove & Control</h3>
+          <div class="admin-note">
+            <b>Remove karna:</b> Admin mode mein har card ke top-right par red <b>✕</b> button aa jata hai — us se tool remove ho jayega.<br><br>
+            <b>Restore:</b> Galti se remove ho gaya? Neeche wala button saare default tools wapas le ayega.<br><br>
+            <b>Note:</b> Added / removed tools is session ke liye hain — page refresh par toolkit apni default halat mein wapas aa jata hai.
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <button class="btn" onclick="restoreDefaults()">↩️ Restore All Default Tools</button>
+            <button class="btn btn-danger" onclick="clearCustom()">Delete All Custom Tools</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GRID -->
+  <div class="sec-head" id="toolsSection">
+    <div><h2>Tool Cards</h2><p id="gridSub">Har card par tool ki picture, naam aur description hai — Open dabao aur use karo.</p></div>
+    <p id="showingCount"></p>
+  </div>
+  <section class="grid" id="toolGrid"></section>
+  <div class="empty" id="emptyState">😕 Koi tool nahi mila. Search badlo, category change karo, ya Admin Panel se naya tool add kar lo.</div>
+
+  <!-- WORKSPACE -->
+  <section class="workspace" id="workspace">
+    <div class="ws-head">
+      <div class="tool-pic" id="wsIcon">🧰</div>
+      <div style="flex:1;min-width:220px">
+        <div class="cat" id="wsCat">TOOL</div>
+        <h2 id="wsTitle">Tool</h2>
+        <p id="wsDesc"></p>
+      </div>
+      <button class="btn" onclick="closeWorkspace()">✕ Close</button>
+    </div>
+    <div class="ws-body">
+
+      <!-- JSON -->
+      <div class="panel" id="panel-json">
+        <div class="two">
+          <div><label class="cat">Input JSON</label><textarea class="code" id="jsonIn" placeholder='{"name":"Bunty","tool":"JSON"}'></textarea></div>
+          <div><label class="cat">Output</label><pre class="out" id="jsonOut">Formatted result yahan ayega…</pre></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-dark" onclick="jsonFormat()">✨ Format / Beautify</button>
+          <button class="btn" onclick="jsonMinify()">Minify</button>
+          <button class="btn" onclick="jsonValidate()">✓ Validate</button>
+          <button class="btn" onclick="copyText(document.getElementById('jsonOut').textContent)">Copy Output</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('jsonIn').value='';document.getElementById('jsonOut').textContent=''">Clear</button>
+        </div><div class="msg" id="jsonMsg"></div>
+      </div>
+
+      <!-- BASE64 -->
+      <div class="panel" id="panel-base64">
+        <label class="cat">Input Text / Base64</label>
+        <textarea class="code" id="b64In" placeholder="Text likho ya Base64 paste karo…"></textarea>
+        <div class="btn-row">
+          <button class="btn btn-dark" onclick="b64Encode()">Encode → Base64</button>
+          <button class="btn" onclick="b64Decode()">Decode ← Base64</button>
+          <button class="btn" onclick="copyText(document.getElementById('b64Out').textContent)">Copy Output</button>
+        </div>
+        <label class="cat">Output</label><pre class="out" id="b64Out" style="min-height:90px"></pre>
+        <div class="msg" id="b64Msg"></div>
+      </div>
+
+      <!-- QR -->
+      <div class="panel" id="panel-qr">
+        <div class="two">
+          <div>
+            <label class="cat">Text / Link / Number</label>
+            <input class="txt" type="text" id="qrText" placeholder="https://example.com ya koi bhi text…" value="https://ahmadminipair.vercel.app">
+            <label class="cat" style="display:block;margin-top:14px">Size — <span id="qrSizeLabel">220px</span></label>
+            <input type="range" id="qrSize" min="140" max="360" value="220" oninput="document.getElementById('qrSizeLabel').textContent=this.value+'px'">
+            <div class="btn-row"><button class="btn btn-dark" onclick="makeQR()">Generate QR Code</button><button class="btn" onclick="downloadQR()">⬇ Download PNG</button></div>
+            <div class="msg" id="qrMsg"></div>
+          </div>
+          <div style="text-align:center"><div id="qrBox"><span style="color:#666;font-size:13px">QR yahan bane ga</span></div></div>
+        </div>
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="panel" id="panel-password">
+        <div class="pwd-out" id="pwdOut">Generate dabao — strong password yahan ayega</div>
+        <div style="margin-top:12px"><div class="strength"><i id="strengthBar"></i></div><div class="msg" id="pwdStrength" style="margin-top:6px"></div></div>
+        <label class="cat" style="display:block;margin-top:10px">Length — <span id="pwdLenLabel">16</span></label>
+        <input type="range" id="pwdLen" min="6" max="48" value="16" oninput="document.getElementById('pwdLenLabel').textContent=this.value">
+        <div class="checks">
+          <label class="chk"><input type="checkbox" id="pwdUpper" checked> ABC Uppercase</label>
+          <label class="chk"><input type="checkbox" id="pwdLower" checked> abc Lowercase</label>
+          <label class="chk"><input type="checkbox" id="pwdNum" checked> 123 Numbers</label>
+          <label class="chk"><input type="checkbox" id="pwdSym" checked> #$& Symbols</label>
+        </div>
+        <div class="btn-row"><button class="btn btn-dark" onclick="genPassword()">🔐 Generate Password</button><button class="btn" onclick="copyText(currentPassword)">Copy Password</button></div>
+      </div>
+
+      <!-- WORD COUNTER -->
+      <div class="panel" id="panel-words">
+        <textarea class="code" id="wordIn" placeholder="Apna text yahan likho ya paste karo — counting live hogi…" oninput="countWords()"></textarea>
+        <div class="kv">
+          <div><b id="wcWords">0</b><span>Words</span></div>
+          <div><b id="wcChars">0</b><span>Characters</span></div>
+          <div><b id="wcNoSpace">0</b><span>No Spaces</span></div>
+          <div><b id="wcSent">0</b><span>Sentences</span></div>
+          <div><b id="wcPara">0</b><span>Paragraphs</span></div>
+          <div><b id="wcRead">0 min</b><span>Reading Time</span></div>
+        </div>
+        <div class="btn-row"><button class="btn" onclick="copyText(document.getElementById('wordIn').value)">Copy Text</button><button class="btn btn-ghost" onclick="document.getElementById('wordIn').value='';countWords()">Clear</button></div>
+      </div>
+
+      <!-- COLOR -->
+      <div class="panel" id="panel-color">
+        <div class="two">
+          <div><label class="cat">Color Chuno</label><input type="color" id="colorPick" value="#262626" oninput="updateColor()"><div class="swatches" id="shadeRow"></div></div>
+          <div>
+            <label class="cat">Formats — tap to copy</label>
+            <div class="color-row"><code id="cHex">#262626</code><button class="btn btn-sm" onclick="copyText(document.getElementById('cHex').textContent)">Copy</button></div>
+            <div class="color-row"><code id="cRgb">rgb(38, 38, 38)</code><button class="btn btn-sm" onclick="copyText(document.getElementById('cRgb').textContent)">Copy</button></div>
+            <div class="color-row"><code id="cHsl">hsl(0, 0%, 15%)</code><button class="btn btn-sm" onclick="copyText(document.getElementById('cHsl').textContent)">Copy</button></div>
+            <div style="height:64px;border-radius:12px;margin-top:12px;border:1px solid var(--line)" id="cPreview"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMAGE COMPRESSOR -->
+      <div class="panel" id="panel-image">
+        <div class="drop" id="dropZone" onclick="document.getElementById('imgFile').click()">
+          <div style="font-size:34px">🖼️</div><b>Image select karo ya yahan drop karo</b>
+          <p>JPG / PNG / WEBP — image tumhare browser mein hi compress hoti hai, kahin upload nahi hoti.</p>
+        </div>
+        <input type="file" id="imgFile" accept="image/*" class="hidden-file" onchange="loadImage(this.files[0])">
+        <label class="cat" style="display:block;margin-top:14px">Quality — <span id="qLabel">70%</span></label>
+        <input type="range" id="imgQ" min="10" max="95" value="70" oninput="document.getElementById('qLabel').textContent=this.value+'%'; if(currentImg) compressImage()">
+        <div class="kv" style="grid-template-columns:1fr 1fr">
+          <div><b id="origSize">—</b><span>Original Size</span></div>
+          <div><b id="compSize">—</b><span>Compressed Size</span></div>
+        </div>
+        <div class="two">
+          <div><label class="cat">Original</label><br><img class="img-prev" id="origPrev" alt="Original uploaded image preview" style="display:none"></div>
+          <div><label class="cat">Compressed</label><br><img class="img-prev" id="compPrev" alt="Compressed image preview" style="display:none"></div>
+        </div>
+        <div class="btn-row"><button class="btn btn-dark" id="dlImgBtn" style="display:none" onclick="downloadCompressed()">⬇ Download Compressed Image</button></div>
+        <div class="msg" id="imgMsg"></div>
+      </div>
+
+      <!-- UUID -->
+      <div class="panel" id="panel-uuid">
+        <div class="btn-row" style="margin-top:0"><button class="btn btn-dark" onclick="genUUID(1)">Generate 1 UUID</button><button class="btn" onclick="genUUID(10)">Generate 10</button><button class="btn" onclick="copyText(uuidList.join('\n'))">Copy All</button></div>
+        <pre class="out" id="uuidOut" style="min-height:90px">UUIDs yahan ayenge…</pre>
+      </div>
+
+      <!-- URL + CASE -->
+      <div class="panel" id="panel-url">
+        <textarea class="code" id="urlIn" placeholder="Text / URL yahan likho…"></textarea>
+        <div class="btn-row">
+          <button class="btn btn-dark" onclick="urlTransform('enc')">URL Encode</button>
+          <button class="btn" onclick="urlTransform('dec')">URL Decode</button>
+          <button class="btn" onclick="caseTransform('upper')">UPPERCASE</button>
+          <button class="btn" onclick="caseTransform('lower')">lowercase</button>
+          <button class="btn" onclick="caseTransform('title')">Title Case</button>
+          <button class="btn" onclick="caseTransform('camel')">camelCase</button>
+        </div>
+        <pre class="out" id="urlOut" style="min-height:90px"></pre>
+        <div class="btn-row"><button class="btn" onclick="copyText(document.getElementById('urlOut').textContent)">Copy Output</button></div>
+      </div>
+
+      <!-- HASH -->
+      <div class="panel" id="panel-hash">
+        <textarea class="code" id="hashIn" placeholder="Hash karne ke liye text likho…" style="min-height:90px"></textarea>
+        <div class="btn-row"><button class="btn btn-dark" onclick="genHashes()">Generate Hashes</button></div>
+        <label class="cat">SHA-1</label><div class="hash-out" id="h1">—</div>
+        <label class="cat" style="display:block;margin-top:10px">SHA-256</label><div class="hash-out" id="h256">—</div>
+        <label class="cat" style="display:block;margin-top:10px">SHA-512</label><div class="hash-out" id="h512">—</div>
+      </div>
+
+      <!-- TIMESTAMP -->
+      <div class="panel" id="panel-time">
+        <div class="kv" style="grid-template-columns:1fr 1fr;margin-top:0">
+          <div><b id="nowUnix">—</b><span>Current Unix (sec)</span></div>
+          <div><b id="nowDate" style="font-size:16px">—</b><span>Current Date & Time</span></div>
+        </div>
+        <div class="two" style="margin-top:14px">
+          <div><label class="cat">Unix Timestamp → Date</label><input class="txt" type="number" id="tsIn" placeholder="e.g. 1795712249"><div class="btn-row"><button class="btn btn-dark" onclick="tsToDate()">Convert</button></div><div class="msg" id="tsOut"></div></div>
+          <div><label class="cat">Date → Unix Timestamp</label><input class="txt" type="datetime-local" id="dateIn"><div class="btn-row"><button class="btn btn-dark" onclick="dateToTs()">Convert</button></div><div class="msg" id="dateOut"></div></div>
+        </div>
+        <button class="btn" onclick="updateNow()">↻ Refresh Current Time</button>
+      </div>
+
+      <!-- LOREM -->
+      <div class="panel" id="panel-lorem">
+        <label class="cat">Paragraphs — <span id="loremLabel">3</span></label>
+        <input type="range" id="loremCount" min="1" max="10" value="3" oninput="document.getElementById('loremLabel').textContent=this.value">
+        <div class="btn-row"><button class="btn btn-dark" onclick="genLorem()">Generate Lorem Ipsum</button><button class="btn" onclick="copyText(document.getElementById('loremOut').textContent)">Copy</button></div>
+        <pre class="out" id="loremOut"></pre>
+      </div>
+
+      <!-- CUSTOM GENERIC -->
+      <div class="panel" id="panel-custom">
+        <div class="admin-note" style="border-radius:10px;padding:12px;font-size:14px;line-height:1.6">⭐ Ye tool <b>Admin Panel</b> se add kiya gaya hai. Iska apna workspace ready hai — neeche apna text / notes likho, transform karo aur copy kar lo.</div>
+        <textarea class="code" id="customIn" placeholder="Yahan apna text likho…" style="margin-top:12px"></textarea>
+        <div class="btn-row">
+          <button class="btn btn-dark" onclick="customTransform('upper')">UPPERCASE</button>
+          <button class="btn" onclick="customTransform('lower')">lowercase</button>
+          <button class="btn" onclick="customTransform('reverse')">Reverse Text</button>
+          <button class="btn" onclick="copyText(document.getElementById('customIn').value)">Copy</button>
+        </div>
+        <div class="msg" id="customInfo"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <b>All-in-One Dev Toolkit</b><br>
+    Saare tools tumhare browser mein chalte hain. Admin mode se toolkit ko apne hisaab se customize karo — tools add karo, remove karo, favorites banao.
+  </footer>
+</div>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+var DEFAULT_TOOLS=[
+ {id:'json',icon:'{ }',emoji:'🧾',name:'JSON Formatter',cat:'Dev',desc:'JSON ko format, beautify, minify aur validate karo. Galat JSON mein error bhi pakad ke deta hai.'},
+ {id:'base64',icon:'64',emoji:'🔐',name:'Base64 Encode / Decode',cat:'Encoding',desc:'Text ko Base64 mein encode karo ya Base64 ko wapas readable text mein decode karo — aik click mein.'},
+ {id:'qr',icon:'▦',emoji:'📱',name:'QR Code Generator',cat:'Generators',desc:'Kisi bhi link, number ya text ka QR code banao, size choose karo aur PNG download kar lo.'},
+ {id:'password',icon:'•••',emoji:'🔑',name:'Password Generator',cat:'Generators',desc:'Strong random passwords banao — length, symbols, numbers sab control tumhare haath mein, strength meter ke saath.'},
+ {id:'words',icon:'Aa',emoji:'📝',name:'Word Counter',cat:'Text',desc:'Words, characters, sentences, paragraphs aur reading time — likhte hi live counting.'},
+ {id:'color',icon:'🎨',emoji:'🎨',name:'Color Picker',cat:'Color',desc:'Color chuno aur HEX, RGB, HSL formats aik saath pao — shades ke saath, copy ready.'},
+ {id:'image',icon:'🖼️',emoji:'🗜️',name:'Image Compressor',cat:'Media',desc:'Image ka size quality slider se kam karo — original vs compressed comparison aur direct download.'},
+ {id:'uuid',icon:'ID',emoji:'🆔',name:'UUID Generator',cat:'Generators',desc:'Unique UUIDs banao — aik aik karke ya aik saath 10, copy ready format mein.'},
+ {id:'url',icon:'🔗',emoji:'🔗',name:'URL & Case Converter',cat:'Encoding',desc:'URL encode/decode plus UPPERCASE, lowercase, Title Case aur camelCase — text transforms sab aik jagah.'},
+ {id:'hash',icon:'#',emoji:'🧮',name:'Hash Generator',cat:'Dev',desc:'Text ke SHA-1, SHA-256 aur SHA-512 hashes banao — browser ke secure crypto se.'},
+ {id:'time',icon:'⏱️',emoji:'⏱️',name:'Timestamp Converter',cat:'Dev',desc:'Unix timestamp ko date mein aur date ko timestamp mein badlo — current time live ke saath.'},
+ {id:'lorem',icon:'¶',emoji:'✍️',name:'Lorem Ipsum Generator',cat:'Text',desc:'Design aur mockups ke liye dummy paragraphs banao — jitne chahiye utne, copy ready.'}
+];
+var tools=DEFAULT_TOOLS.slice();
+var favorites=new Set();
+var currentCat='all', favOnly=false, adminMode=false, currentPassword='', uuidList=[], currentImg=null, compressedUrl=null;
+var activeTool=null;
+
+var GLYPHS={json:'{ }',base64:'64',qr:'\u25a6',password:'\u2022\u2022\u2022',words:'Aa',color:'\u25d0',image:'\u25a3',uuid:'ID',url:'\u2317',hash:'#',time:'\u25d4',lorem:'\u00b6'};
+var TILE_GRADS={
+ json:'#111111',base64:'#e9e9e9',qr:'#2e2e2e',password:'#e9e9e9',words:'#111111',
+ color:'#e9e9e9',image:'#2e2e2e',uuid:'#e9e9e9',url:'#111111',hash:'#e9e9e9',
+ time:'#2e2e2e',lorem:'#e9e9e9'
+};
+var CAT_GRADS={Text:'#e9e9e9',Encoding:'#2e2e2e',Generators:'#111111',Media:'#e9e9e9',Color:'#2e2e2e',Dev:'#111111',Custom:'#e9e9e9'};
+function isDarkTile(t){var g=tileGrad(t);return g==='#111111'||g==='#2e2e2e'}
+function tileGrad(t){return TILE_GRADS[t.id]||CAT_GRADS[t.cat]||CAT_GRADS.Custom}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},1800)}
+function copyText(txt){if(!txt){toast('Copy karne ke liye kuch nahi hai');return} if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast('✓ Copied to clipboard')},function(){fallbackCopy(txt)})}else{fallbackCopy(txt)}}
+function fallbackCopy(txt){var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('✓ Copied to clipboard')}catch(e){toast('Copy nahi ho saka')}document.body.removeChild(ta)}
+
+function renderGrid(){
+  var q=(document.getElementById('searchInput').value||'').toLowerCase().trim();
+  var grid=document.getElementById('toolGrid');grid.innerHTML='';
+  var shown=0;
+  tools.forEach(function(t){
+    if(currentCat!=='all'&&t.cat!==currentCat)return;
+    if(favOnly&&!favorites.has(t.id))return;
+    if(q&&!(t.name.toLowerCase().includes(q)||t.desc.toLowerCase().includes(q)||t.cat.toLowerCase().includes(q)))return;
+    shown++;
+    var card=document.createElement('article');card.className='tool-card';
+    card.style.setProperty('--tile',tileGrad(t));
+    card.style.animationDelay=Math.min(shown*55,440)+'ms';
+    var fav=favorites.has(t.id);var glyph=t.custom?t.emoji:(GLYPHS[t.id]||t.emoji);var darkTile=isDarkTile(t);
+    card.innerHTML=
+      '<button class="del-btn" title="Remove tool" aria-label="Remove '+esc(t.name)+'">✕</button>'+
+      '<div class="tool-top"><div class="tool-pic '+(darkTile?'tile-dark':'tile-light')+'" style="background:'+tileGrad(t)+'">'+esc(glyph)+'</div><div><div class="cat">'+esc(t.cat)+(t.custom?' • Custom':'')+'</div><h3>'+esc(t.name)+'</h3></div></div>'+
+      '<p class="tool-desc">'+esc(t.desc)+'</p>'+
+      '<div class="card-actions"><button class="btn btn-dark open-btn">Open Tool →</button>'+
+      '<button class="fav-btn'+(fav?' active':'')+'" title="Favorite" aria-label="Toggle favorite">★</button></div>';
+    card.querySelector('.del-btn').addEventListener('click',function(e){e.stopPropagation();removeTool(t.id)});
+    card.querySelector('.open-btn').addEventListener('click',function(){openTool(t.id)});
+    card.querySelector('.fav-btn').addEventListener('click',function(){toggleFav(t.id)});
+    grid.appendChild(card);
+  });
+  document.getElementById('emptyState').classList.toggle('show',shown===0);
+  document.getElementById('showingCount').textContent=shown+' of '+tools.length+' tools showing';
+  document.getElementById('chipTotal').textContent=tools.length+' Tools';
+  document.getElementById('statTotal').textContent=tools.length;
+  document.getElementById('statCustom').textContent=tools.filter(function(t){return t.custom}).length;
+  document.getElementById('statFav').textContent=favorites.size;
+}
+function toggleFav(id){if(favorites.has(id)){favorites.delete(id)}else{favorites.add(id);toast('★ Favorite mein add ho gaya')}renderGrid()}
+function toggleFavFilter(){favOnly=!favOnly;document.getElementById('favFilterBtn').classList.toggle('btn-dark',favOnly);renderGrid()}
+function setCat(cat,el){currentCat=cat;var pills=document.querySelectorAll('#catPills .pill');pills.forEach(function(p){p.classList.remove('active')});el.classList.add('active');renderGrid()}
+document.getElementById('searchInput').addEventListener('input',renderGrid);
+
+function openTool(id){
+  var t=tools.find(function(x){return x.id===id});if(!t)return;
+  activeTool=t;
+  var wsIcon=document.getElementById('wsIcon');wsIcon.textContent=t.custom?t.emoji:(GLYPHS[t.id]||t.emoji);wsIcon.style.background=tileGrad(t);wsIcon.classList.toggle('tile-dark',isDarkTile(t));wsIcon.classList.toggle('tile-light',!isDarkTile(t));
+  document.getElementById('wsCat').textContent=t.cat+' TOOL';
+  document.getElementById('wsTitle').textContent=t.name;
+  document.getElementById('wsDesc').textContent=t.desc;
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+  var panelId=t.custom?'panel-custom':'panel-'+t.id;
+  var panel=document.getElementById(panelId);if(panel)panel.classList.add('active');
+  if(t.custom){document.getElementById('customInfo').textContent='Custom tool: '+t.name+' — Category: '+t.cat}
+  var ws=document.getElementById('workspace');ws.classList.add('open');
+  ws.scrollIntoView({behavior:'smooth',block:'start'});
+  if(t.id==='color')updateColor();
+  if(t.id==='time')updateNow();
+  if(t.id==='password'&&!currentPassword)genPassword();
+  if(t.id==='qr')makeQR();
+}
+function closeWorkspace(){document.getElementById('workspace').classList.remove('open');document.getElementById('toolsSection').scrollIntoView({behavior:'smooth'})}
+
+/* ADMIN */
+function toggleAdmin(){
+  adminMode=!adminMode;
+  document.body.classList.toggle('admin-mode',adminMode);
+  document.getElementById('adminPanel').classList.toggle('open',adminMode);
+  document.getElementById('adminToggleBtn').classList.toggle('admin-on',adminMode);
+  document.getElementById('adminToggleBtn').textContent=adminMode?'⚙️ Admin Mode: ON':'⚙️ Admin Mode';
+  document.getElementById('adminToggleTop').textContent=adminMode?'⚙️ Admin Mode: ON — Panel Open':'⚙️ Open Admin Panel';
+  if(adminMode){document.getElementById('adminPanel').scrollIntoView({behavior:'smooth',block:'nearest'});toast('⚙️ Admin Mode ON — ✕ se tools remove karo')}
+  renderGrid();
+}
+function addCustomTool(){
+  var name=document.getElementById('newName').value.trim();
+  var desc=document.getElementById('newDesc').value.trim();
+  var icon=document.getElementById('newIcon').value.trim()||'🛠️';
+  var cat=document.getElementById('newCat').value;
+  var msg=document.getElementById('adminMsg');
+  if(!name||!desc){msg.textContent='⚠ Tool Name aur Description dono zaroori hain.';msg.className='msg err';return}
+  var id='custom-'+Date.now();
+  tools.push({id:id,emoji:icon,name:name,cat:cat,desc:desc,custom:true});
+  msg.textContent='✓ "'+name+'" add ho gaya! Grid mein card aa gaya hai.';msg.className='msg ok';
+  document.getElementById('newName').value='';document.getElementById('newDesc').value='';
+  renderGrid();toast('➕ New tool added: '+name);
+}
+function removeTool(id){
+  var t=tools.find(function(x){return x.id===id});
+  tools=tools.filter(function(x){return x.id!==id});
+  favorites.delete(id);
+  if(activeTool&&activeTool.id===id)closeWorkspaceSilent();
+  renderGrid();toast('🗑️ Removed: '+(t?t.name:'tool'));
+}
+function closeWorkspaceSilent(){document.getElementById('workspace').classList.remove('open');activeTool=null}
+function clearCustom(){tools=tools.filter(function(t){return !t.custom});renderGrid();toast('Custom tools delete ho gaye')}
+function restoreDefaults(){
+  var customs=tools.filter(function(t){return t.custom});
+  tools=DEFAULT_TOOLS.slice().concat(customs);
+  renderGrid();toast('↩️ Saare default tools restore ho gaye');
+}
+
+/* JSON */
+function jsonParse(){return JSON.parse(document.getElementById('jsonIn').value)}
+function jsonFormat(){var m=document.getElementById('jsonMsg');try{var o=jsonParse();document.getElementById('jsonOut').textContent=JSON.stringify(o,null,2);m.textContent='✓ Valid JSON — format ho gaya.';m.className='msg ok'}catch(e){m.textContent='✕ Error: '+e.message;m.className='msg err'}}
+function jsonMinify(){var m=document.getElementById('jsonMsg');try{var o=jsonParse();document.getElementById('jsonOut').textContent=JSON.stringify(o);m.textContent='✓ Minify ho gaya.';m.className='msg ok'}catch(e){m.textContent='✕ Error: '+e.message;m.className='msg err'}}
+function jsonValidate(){var m=document.getElementById('jsonMsg');try{jsonParse();m.textContent='✓ Valid JSON hai.';m.className='msg ok'}catch(e){m.textContent='✕ Invalid JSON: '+e.message;m.className='msg err'}}
+
+/* BASE64 */
+function b64Encode(){var v=document.getElementById('b64In').value;try{document.getElementById('b64Out').textContent=btoa(unescape(encodeURIComponent(v)));setB64('✓ Encode ho gaya','ok')}catch(e){setB64('✕ '+e.message,'err')}}
+function b64Decode(){var v=document.getElementById('b64In').value.trim();try{document.getElementById('b64Out').textContent=decodeURIComponent(escape(atob(v)));setB64('✓ Decode ho gaya','ok')}catch(e){setB64('✕ Invalid Base64 hai.','err')}}
+function setB64(t,c){var m=document.getElementById('b64Msg');m.textContent=t;m.className='msg '+c}
+
+/* QR */
+function makeQR(){
+  var text=document.getElementById('qrText').value.trim();var box=document.getElementById('qrBox');var msg=document.getElementById('qrMsg');
+  if(!text){msg.textContent='⚠ Pehle text ya link likho.';msg.className='msg err';return}
+  var size=parseInt(document.getElementById('qrSize').value,10);
+  box.innerHTML='';
+  if(typeof QRCode!=='undefined'){new QRCode(box,{text:text,width:size,height:size,correctLevel:QRCode.CorrectLevel.M});msg.textContent='✓ QR ready hai — Download dabao.';msg.className='msg ok'}
+  else{box.innerHTML='<span style="color:#666;font-size:13px">QR library load nahi hui</span>';msg.textContent='✕ QR library load nahi hui — page refresh karke dobara try karo.';msg.className='msg err'}
+}
+function downloadQR(){
+  var box=document.getElementById('qrBox');var canvas=box.querySelector('canvas');var img=box.querySelector('img');var url=null;
+  if(canvas)url=canvas.toDataURL('image/png');else if(img)url=img.src;
+  if(!url){toast('Pehle QR generate karo');return}
+  var a=document.createElement('a');a.href=url;a.download='qr-code.png';a.target='_blank';document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+/* PASSWORD */
+function genPassword(){
+  var len=parseInt(document.getElementById('pwdLen').value,10);
+  var sets='';if(document.getElementById('pwdLower').checked)sets+='abcdefghijklmnopqrstuvwxyz';if(document.getElementById('pwdUpper').checked)sets+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';if(document.getElementById('pwdNum').checked)sets+='0123456789';if(document.getElementById('pwdSym').checked)sets+='!@#$%^&*()_+-=[]{};:,.<>?';
+  if(!sets){document.getElementById('pwdStrength').textContent='⚠ Kam az kam aik option select karo.';return}
+  var arr=new Uint32Array(len);crypto.getRandomValues(arr);var pwd='';for(var i=0;i<len;i++)pwd+=sets[arr[i]%sets.length];
+  currentPassword=pwd;document.getElementById('pwdOut').textContent=pwd;
+  var score=0;if(len>=12)score++;if(len>=20)score++;if(/[A-Z]/.test(pwd)&&/[a-z]/.test(pwd))score++;if(/\d/.test(pwd))score++;if(/[^A-Za-z0-9]/.test(pwd))score++;
+  var pct=Math.min(100,score*22);var bar=document.getElementById('strengthBar');bar.style.width=pct+'%';bar.style.background=score<=2?'#b5b5b5':score<=3?'#5a5a5a':'#0a0a0a';
+  document.getElementById('pwdStrength').textContent='Strength: '+(score<=2?'Weak — lamba karo':score<=3?'Medium — theek hai':'Strong 💪 — zabardast!');
+}
+
+/* WORDS */
+function countWords(){
+  var v=document.getElementById('wordIn').value;
+  var words=v.trim()?v.trim().split(/\s+/).length:0;
+  document.getElementById('wcWords').textContent=words;
+  document.getElementById('wcChars').textContent=v.length;
+  document.getElementById('wcNoSpace').textContent=v.replace(/\s/g,'').length;
+  document.getElementById('wcSent').textContent=v.trim()?(v.match(/[.!?]+/g)||[]).length:0;
+  document.getElementById('wcPara').textContent=v.trim()?v.split(/\n\s*\n/).filter(Boolean).length:0;
+  document.getElementById('wcRead').textContent=(words?Math.max(1,Math.ceil(words/200)):0)+' min';
+}
+
+/* COLOR */
+function hexToRgb(h){h=h.replace('#','');return{r:parseInt(h.substr(0,2),16),g:parseInt(h.substr(2,2),16),b:parseInt(h.substr(4,2),16)}}
+function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;var mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn,h=0,s=0;if(d){s=l>0.5?d/(2-mx-mn):d/(mx+mn);switch(mx){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;default:h=(r-g)/d+4}h*=60}return{h:Math.round(h),s:Math.round(s*100),l:Math.round(l*100)}}
+function shade(hex,p){var c=hexToRgb(hex);function f(x){return Math.max(0,Math.min(255,Math.round(x+(p>0?(255-x)*p:x*p))))}var r=f(c.r),g=f(c.g),b=f(c.b);return '#'+[r,g,b].map(function(x){return x.toString(16).padStart(2,'0')}).join('').toUpperCase()}
+function updateColor(){
+  var hex=document.getElementById('colorPick').value.toUpperCase();var rgb=hexToRgb(hex);var hsl=rgbToHsl(rgb.r,rgb.g,rgb.b);
+  document.getElementById('cHex').textContent=hex;
+  document.getElementById('cRgb').textContent='rgb('+rgb.r+', '+rgb.g+', '+rgb.b+')';
+  document.getElementById('cHsl').textContent='hsl('+hsl.h+', '+hsl.s+'%, '+hsl.l+'%)';
+  document.getElementById('cPreview').style.background=hex;
+  var row=document.getElementById('shadeRow');row.innerHTML='';
+  [-0.5,-0.3,-0.15,0,0.2,0.4,0.65].forEach(function(p){var s=shade(hex,p);var d=document.createElement('div');d.className='swatch';d.style.background=s;d.title=s;d.addEventListener('click',function(){copyText(s)});row.appendChild(d)});
+}
+
+/* IMAGE */
+var dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',function(e){e.preventDefault();dz.style.borderColor='#0a0a0a'});
+dz.addEventListener('dragleave',function(){dz.style.borderColor=''});
+dz.addEventListener('drop',function(e){e.preventDefault();dz.style.borderColor='';if(e.dataTransfer.files[0])loadImage(e.dataTransfer.files[0])});
+function fmtSize(b){if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1)+' KB';return (b/1048576).toFixed(2)+' MB'}
+function loadImage(file){
+  if(!file||!file.type.startsWith('image/')){document.getElementById('imgMsg').textContent='⚠ Sirf image file select karo.';return}
+  document.getElementById('origSize').textContent=fmtSize(file.size);
+  var url=URL.createObjectURL(file);var prev=document.getElementById('origPrev');prev.src=url;prev.style.display='block';
+  var img=new Image();img.onload=function(){currentImg=img;compressImage()};img.src=url;
+}
+function compressImage(){
+  var q=parseInt(document.getElementById('imgQ').value,10)/100;
+  var canvas=document.createElement('canvas');canvas.width=currentImg.naturalWidth;canvas.height=currentImg.naturalHeight;
+  canvas.getContext('2d').drawImage(currentImg,0,0);
+  canvas.toBlob(function(blob){
+    if(!blob)return;compressedUrl=URL.createObjectURL(blob);
+    document.getElementById('compSize').textContent=fmtSize(blob.size);
+    var cp=document.getElementById('compPrev');cp.src=compressedUrl;cp.style.display='block';
+    document.getElementById('dlImgBtn').style.display='inline-flex';
+    document.getElementById('imgMsg').textContent='✓ Compress ho gaya — Download dabao.';document.getElementById('imgMsg').className='msg ok';
+  },'image/jpeg',q);
+}
+function downloadCompressed(){if(!compressedUrl)return;var a=document.createElement('a');a.href=compressedUrl;a.download='compressed-image.jpg';document.body.appendChild(a);a.click();document.body.removeChild(a)}
+
+/* UUID */
+function oneUUID(){if(crypto.randomUUID)return crypto.randomUUID();return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0,v=c==='x'?r:(r&0x3|0x8);return v.toString(16)})}
+function genUUID(n){uuidList=[];for(var i=0;i<n;i++)uuidList.push(oneUUID());document.getElementById('uuidOut').textContent=uuidList.join('\n')}
+
+/* URL / CASE */
+function urlTransform(m){var v=document.getElementById('urlIn').value;try{document.getElementById('urlOut').textContent=m==='enc'?encodeURIComponent(v):decodeURIComponent(v)}catch(e){document.getElementById('urlOut').textContent='Error: '+e.message}}
+function caseTransform(m){var v=document.getElementById('urlIn').value;var o=v;if(m==='upper')o=v.toUpperCase();if(m==='lower')o=v.toLowerCase();if(m==='title')o=v.toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase()});if(m==='camel')o=v.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g,function(_,c){return c.toUpperCase()}).replace(/^[A-Z]/,function(c){return c.toLowerCase()});document.getElementById('urlOut').textContent=o}
+
+/* HASH */
+async function sha(algo,text){var buf=await crypto.subtle.digest(algo,new TextEncoder().encode(text));return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('')}
+async function genHashes(){var v=document.getElementById('hashIn').value;if(!v){toast('Pehle text likho');return}document.getElementById('h1').textContent=await sha('SHA-1',v);document.getElementById('h256').textContent=await sha('SHA-256',v);document.getElementById('h512').textContent=await sha('SHA-512',v)}
+
+/* TIME */
+function updateNow(){var n=new Date();document.getElementById('nowUnix').textContent=Math.floor(n.getTime()/1000);document.getElementById('nowDate').textContent=n.toLocaleString()}
+function tsToDate(){var v=parseInt(document.getElementById('tsIn').value,10);var o=document.getElementById('tsOut');if(isNaN(v)){o.textContent='⚠ Valid timestamp likho.';o.className='msg err';return}var d=new Date(v*1000);o.textContent='📅 '+d.toLocaleString()+'  •  '+d.toUTCString();o.className='msg ok'}
+function dateToTs(){var v=document.getElementById('dateIn').value;var o=document.getElementById('dateOut');if(!v){o.textContent='⚠ Date select karo.';o.className='msg err';return}o.textContent='⏱️ Unix: '+Math.floor(new Date(v).getTime()/1000);o.className='msg ok'}
+
+/* LOREM */
+function genLorem(){
+  var n=parseInt(document.getElementById('loremCount').value,10);
+  var base='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
+  var out=[];for(var i=0;i<n;i++)out.push(base);
+  document.getElementById('loremOut').textContent=out.join('\n\n');
+}
+
+/* CUSTOM */
+function customTransform(m){var ta=document.getElementById('customIn');if(m==='upper')ta.value=ta.value.toUpperCase();if(m==='lower')ta.value=ta.value.toLowerCase();if(m==='reverse')ta.value=ta.value.split('').reverse().join('')}
+
+renderGrid();
+countWords();
+</script>
+<script>window.addEventListener('load',function(){if(/[?&]admin=1/.test(location.search)||location.hash==='#admin'){try{toggleAdmin()}catch(e){}}});</script></body>
+</html>
