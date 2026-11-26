@@ -318,13 +318,17 @@ img,canvas,svg,video{max-width:100%}
 .mnt-card{max-width:520px;width:100%;text-align:center;background:var(--glass);border:1px solid var(--line);border-radius:20px;padding:38px 28px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .mnt-card h2{font-family:var(--display);font-style:italic;font-size:32px;margin:10px 0 8px}
 .mnt-card p{color:var(--muted);line-height:1.65}
+
+.tb-brand{display:flex;align-items:center;gap:6px}
+.tb-name{font-family:var(--display);font-style:italic;font-weight:700;font-size:19px;color:var(--ink)}
+.tb-badge{width:17px;height:17px;flex:none;filter:drop-shadow(0 1px 3px rgba(0,149,246,.45))}
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <!-- HERO -->
-    <div class="topbar"><span class="tb-brand">🧰 ALL-IN-ONE DEV TOOLKIT</span><span class="nav-status"><span class="status-dot" id="liveDot"></span><span id="liveTxt">Live</span></span></div>
+    <div class="topbar"><span class="tb-brand"><span class="tb-name">Dev Ahmad</span><svg class="tb-badge" viewBox="0 0 24 24" aria-label="Verified" role="img"><polygon fill="#0095F6" points="23.4,12.0 21.9,14.0 22.5,16.4 20.4,17.6 20.1,20.1 17.6,20.4 16.4,22.5 14.0,21.9 12.0,23.4 10.0,21.9 7.6,22.5 6.4,20.4 3.9,20.1 3.6,17.6 1.5,16.4 2.1,14.0 0.6,12.0 2.1,10.0 1.5,7.6 3.6,6.4 3.9,3.9 6.4,3.6 7.6,1.5 10.0,2.1 12.0,0.6 14.0,2.1 16.4,1.5 17.6,3.6 20.1,3.9 20.4,6.4 22.5,7.6 21.9,10.0"/><path d="M8.1 12.5l2.5 2.5 5.3-5.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="nav-status"><span class="status-dot" id="liveDot"></span><span id="liveTxt">Live</span></span></div>
   <header class="hero">
     <canvas id="bgCanvas" hidden></canvas><video id="bgVideo" hidden autoplay muted loop playsinline></video>
     <div class="hero-kicker">Developer Utilities · Admin Powered</div>
@@ -653,6 +657,7 @@ img,canvas,svg,video{max-width:100%}
         <div class="btn-row" style="justify-content:center"><button class="btn btn-dark" onclick="swStart()">▶ Start</button><button class="btn" onclick="swStop()">⏸ Stop</button><button class="btn" onclick="swLap()">Lap</button><button class="btn" onclick="swReset()">Reset</button></div>
         <pre class="out" id="swLaps" style="min-height:60px"></pre>
       </div>
+
 
 
 
@@ -994,6 +999,8 @@ function tkSaveSettings(){
   tkSettings={bgType:bt,bgUrl:bu};
   var _mt=document.getElementById('mntToggle'),_mm=document.getElementById('mntMsg'),_ga=document.getElementById('gaId');
   tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
+  var _mt=document.getElementById('mntToggle'),_mm=document.getElementById('mntMsg'),_ga=document.getElementById('gaId');
+  tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
   tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},null);
   var m=document.getElementById('bgMsg');if(m){m.textContent='✓ Options saved — all visitors will see this background.';m.className='msg ok';}
   tkApplyBg();
@@ -1002,6 +1009,7 @@ var tkAnimId=null;
 function tkStopBg(){var c=document.getElementById('bgCanvas'),v=document.getElementById('bgVideo');if(c)c.hidden=true;if(v){v.hidden=true;v.pause();}if(tkAnimId){cancelAnimationFrame(tkAnimId);tkAnimId=null;}}
 function tkStartAnim(){
   var c=document.getElementById('bgCanvas');if(!c)return;c.hidden=false;
+  var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
@@ -1106,6 +1114,7 @@ window.addEventListener('load',function(){
     if(s.maintenance&&!isAdmin){var ov=document.getElementById('mntOverlay');if(ov){var tx=document.getElementById('mntText');if(tx&&s.maintMsg)tx.textContent=s.maintMsg;ov.hidden=false;document.body.style.overflow='hidden';}}
   }).catch(function(){var dot=document.getElementById('liveDot');if(dot)dot.classList.add('off');var lt=document.getElementById('liveTxt');if(lt)lt.textContent='Offline';});
 });
+
 </script>
 </body>
 </html>
