@@ -24,7 +24,7 @@
 <body>
   <div class="card">
     <h1>Admin Panel</h1>
-    <p>Password do, panel khul jayega.</p>
+    <p>Enter your password to open the panel.</p>
     <form id="f">
       <label for="pw">Password</label>
       <input id="pw" type="password" autocomplete="current-password" placeholder="••••••••" required>
@@ -46,14 +46,14 @@ document.getElementById('f').addEventListener('submit', async function(e){
       sessionStorage.setItem('tk_admin_key', pw);
       location.replace('/?admin=1');
     } else if (r.status === 503) {
-      msg.style.color = '#f87171'; msg.textContent = 'Admin password abhi set nahi hai. Owner ko bolo Vercel mein ADMIN_KEY lagaye.';
+      msg.style.color = '#f87171'; msg.textContent = 'Admin password is not set yet. Ask the owner to set ADMIN_KEY in Vercel.';
       btn.disabled = false;
     } else {
-      msg.style.color = '#f87171'; msg.textContent = 'Wrong password. Dobara try karo.';
+      msg.style.color = '#f87171'; msg.textContent = 'Wrong password. Try again.';
       btn.disabled = false;
     }
   } catch(err) {
-    msg.style.color = '#f87171'; msg.textContent = 'Network error. Dobara try karo.';
+    msg.style.color = '#f87171'; msg.textContent = 'Network error. Try again.';
     btn.disabled = false;
   }
 });

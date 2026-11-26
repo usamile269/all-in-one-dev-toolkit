@@ -258,17 +258,25 @@ img,canvas,svg,video{max-width:100%}
 .comm-txt b{display:block;font-size:19px;font-weight:700}
 .comm-txt i{font-style:normal;color:var(--muted);font-family:var(--mono);font-size:13px}
 .comm-arrow{margin-left:auto;color:var(--muted);font-size:18px}
+
+[data-theme="light"]{color-scheme:light;--bg:#fafafa;--panel:#ffffff;--panel-2:#f4f4f5;--panel-3:#e4e4e7;--glass:rgba(0,0,0,.02);--glass-2:rgba(0,0,0,.04);--glass-3:rgba(0,0,0,.06);--ink:#18181b;--ink-2:#3f3f46;--muted:#52525b;--faint:#a1a1aa;--line:rgba(0,0,0,.08);--line-2:rgba(0,0,0,.14);--line-3:rgba(0,0,0,.22);--white:#18181b;--shadow:0 10px 30px rgba(0,0,0,.08);--shadow-lg:0 24px 48px rgba(0,0,0,.12)}
+[data-theme="light"] ::selection{color:#fff}
+[data-theme="light"] .chip:first-child,[data-theme="light"] .btn-dark,[data-theme="light"] .btn-hero,[data-theme="light"] .pill.active,[data-theme="light"] .fav-btn.active,[data-theme="light"] .del-btn{color:#fff}
+[data-theme="light"] .btn-dark:hover,[data-theme="light"] .btn-hero:hover{background:#27272a;border-color:#27272a;box-shadow:0 10px 24px rgba(0,0,0,.18)}
+[data-theme="light"] .hero h1 .gold{background:linear-gradient(120deg,#18181b 10%,#71717a 55%,#3f3f46 90%);-webkit-background-clip:text;background-clip:text}
+[data-theme="light"] .toast{color:#fff;border-color:#18181b}
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <!-- HERO -->
+  <div style="display:flex;justify-content:flex-end;padding:16px 4px 0"><button class="btn" id="themeBtn" onclick="tkTheme()">🌗 Light Mode</button></div>
   <header class="hero">
     <canvas id="bgCanvas" hidden></canvas><video id="bgVideo" hidden autoplay muted loop playsinline></video>
     <div class="hero-kicker">Developer Utilities · Admin Powered</div>
     <h1>All-in-One<br><span class="gold">Dev Toolkit</span></h1>
-    <p>Har roz ke developer tools — aik hi jagah. JSON, Base64, QR, passwords, colors, images aur bohat kuch. Card par tap karo, tool khul jayega. Admin mode se naye tools add aur purane remove bhi kar sakte ho.</p>
+    <p>Everyday developer tools — all in one place. JSON, Base64, QR, passwords, colors, images and much more. Tap a card to open a tool. New tools are added by the admin.</p>
     <div class="hero-stats">
       <span class="chip" id="chipTotal">18 Tools</span>
       <span class="chip">100% Free</span>
@@ -304,7 +312,7 @@ img,canvas,svg,video{max-width:100%}
     <div class="admin-head">
       <div>
         <h2>⚙️ Powerful Admin System</h2>
-        <p>Admin mode ON hai — naye tools add karo, cards se tools remove karo, pura toolkit control karo.</p>
+        <p>Admin mode is ON — add new tools, remove tools from their cards, and control the whole toolkit.</p>
       </div>
       <button class="btn btn-hero" onclick="toggleAdmin()">Exit Admin</button>
     </div>
@@ -322,16 +330,16 @@ img,canvas,svg,video{max-width:100%}
           <div class="field"><label for="newCat">Category</label>
             <select id="newCat"><option>Text</option><option>Encoding</option><option>Generators</option><option>Media</option><option>Color</option><option>Dev</option><option selected>Custom</option></select>
           </div>
-          <div class="field"><label for="newDesc">Description *</label><textarea id="newDesc" placeholder="Is tool se kya hoga — short description likho jo card par nazar aye…"></textarea></div>
+          <div class="field"><label for="newDesc">Description *</label><textarea id="newDesc" placeholder="What does this tool do — write a short description shown on the card…"></textarea></div>
           <button class="btn btn-dark" style="width:100%" onclick="addCustomTool()">➕ Add Tool to Toolkit</button>
           <div class="msg" id="adminMsg" style="margin-top:8px"></div>
         </div>
         <div>
           <h3 style="font-size:18px;font-weight:700;margin:0 0 12px">🗑️ Remove & Control</h3>
           <div class="admin-note">
-            <b>Remove karna:</b> Admin mode mein har card ke top-right par red <b>✕</b> button aa jata hai — us se tool remove ho jayega.<br><br>
-            <b>Restore:</b> Galti se remove ho gaya? Neeche wala button saare default tools wapas le ayega.<br><br>
-            <b>Note:</b> Added / removed tools is session ke liye hain — page refresh par toolkit apni default halat mein wapas aa jata hai.
+            <b>To remove:</b> In admin mode, every card shows a <b>✕</b> button at its top-right — use it to remove that tool.<br><br>
+            <b>Restore:</b> Removed something by mistake? The button below brings all default tools back.<br><br>
+            <b>Note:</b> Tools added from this panel are published for all visitors. Default-tool removals apply to this session.
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
             <button class="btn" onclick="restoreDefaults()">↩️ Restore All Default Tools</button>
@@ -344,22 +352,22 @@ img,canvas,svg,video{max-width:100%}
       <div class="admin-body" style="padding-top:0">
         <h3 style="font-size:18px;font-weight:700;margin:0 0 12px">🎬 Site Options — Header Background</h3>
         <div class="field"><label for="bgType">Header Background Type</label>
-          <select id="bgType"><option value="none">None (plain)</option><option value="anim">Animated (live particles — video jaisa)</option><option value="video">Video URL (mp4/webm)</option></select>
+          <select id="bgType"><option value="none">None (plain)</option><option value="anim">Animated (live particles — video-like)</option><option value="video">Video URL (mp4/webm)</option></select>
         </div>
-        <div class="field"><label for="bgUrl">Video URL (sirf Video type ke liye)</label><input type="text" id="bgUrl" placeholder="https://example.com/video.mp4"></div>
-        <button class="btn btn-dark" style="width:100%" onclick="tkSaveSettings()">💾 Save Options — Sab Ko Show Hoga</button>
+        <div class="field"><label for="bgUrl">Video URL (only for the Video type)</label><input type="text" id="bgUrl" placeholder="https://example.com/video.mp4"></div>
+        <button class="btn btn-dark" style="width:100%" onclick="tkSaveSettings()">💾 Save Options — Visible to Everyone</button>
         <div class="msg" id="bgMsg" style="margin-top:8px"></div>
       </div>
     </section>
 
   <!-- GRID -->
   <div class="sec-head" id="toolsSection">
-    <div><h2>Tool Cards</h2><p id="gridSub">Har card par tool ki picture, naam aur description hai — Open dabao aur use karo.</p></div>
+    <div><h2>Tool Cards</h2><p id="gridSub">Every card shows a tool's picture, name and description — press Open and use it.</p></div>
     <p id="showingCount"></p>
   </div>
   <section class="grid" id="toolGrid"></section>
-    <div id="emptyNote" hidden style="text-align:center;color:var(--muted);padding:34px 10px;font-size:15px">Abhi koi tool nahi hai — admin jald new tools add karega. 👇 Channels join kar lo, updates wahan milenge.</div>
-  <div class="empty" id="emptyState">😕 Koi tool nahi mila. Search badlo, category change karo, ya Admin Panel se naya tool add kar lo.</div>
+    <div id="emptyNote" hidden style="text-align:center;color:var(--muted);padding:34px 10px;font-size:15px">No tools yet — the admin will add new tools soon. 👇 Join the channels below for updates.</div>
+  <div class="empty" id="emptyState">😕 No tool found. Try a different search or category.</div>
 
   <!-- WORKSPACE -->
   <section class="workspace" id="workspace">
@@ -378,7 +386,7 @@ img,canvas,svg,video{max-width:100%}
       <div class="panel" id="panel-json">
         <div class="two">
           <div><label class="cat">Input JSON</label><textarea class="code" id="jsonIn" placeholder='{"name":"Bunty","tool":"JSON"}'></textarea></div>
-          <div><label class="cat">Output</label><pre class="out" id="jsonOut">Formatted result yahan ayega…</pre></div>
+          <div><label class="cat">Output</label><pre class="out" id="jsonOut">Formatted result will appear here…</pre></div>
         </div>
         <div class="btn-row">
           <button class="btn btn-dark" onclick="jsonFormat()">✨ Format / Beautify</button>
@@ -392,7 +400,7 @@ img,canvas,svg,video{max-width:100%}
       <!-- BASE64 -->
       <div class="panel" id="panel-base64">
         <label class="cat">Input Text / Base64</label>
-        <textarea class="code" id="b64In" placeholder="Text likho ya Base64 paste karo…"></textarea>
+        <textarea class="code" id="b64In" placeholder="Type text or paste Base64…"></textarea>
         <div class="btn-row">
           <button class="btn btn-dark" onclick="b64Encode()">Encode → Base64</button>
           <button class="btn" onclick="b64Decode()">Decode ← Base64</button>
@@ -407,19 +415,19 @@ img,canvas,svg,video{max-width:100%}
         <div class="two">
           <div>
             <label class="cat">Text / Link / Number</label>
-            <input class="txt" type="text" id="qrText" placeholder="https://example.com ya koi bhi text…" value="https://ahmadminipair.vercel.app">
+            <input class="txt" type="text" id="qrText" placeholder="https://example.com or any text…" value="https://ahmadminipair.vercel.app">
             <label class="cat" style="display:block;margin-top:14px">Size — <span id="qrSizeLabel">220px</span></label>
             <input type="range" id="qrSize" min="140" max="360" value="220" oninput="document.getElementById('qrSizeLabel').textContent=this.value+'px'">
             <div class="btn-row"><button class="btn btn-dark" onclick="makeQR()">Generate QR Code</button><button class="btn" onclick="downloadQR()">⬇ Download PNG</button></div>
             <div class="msg" id="qrMsg"></div>
           </div>
-          <div style="text-align:center"><div id="qrBox"><span style="color:#666;font-size:13px">QR yahan bane ga</span></div></div>
+          <div style="text-align:center"><div id="qrBox"><span style="color:#666;font-size:13px">Your QR will appear here</span></div></div>
         </div>
       </div>
 
       <!-- PASSWORD -->
       <div class="panel" id="panel-password">
-        <div class="pwd-out" id="pwdOut">Generate dabao — strong password yahan ayega</div>
+        <div class="pwd-out" id="pwdOut">Press Generate — your strong password will appear here</div>
         <div style="margin-top:12px"><div class="strength"><i id="strengthBar"></i></div><div class="msg" id="pwdStrength" style="margin-top:6px"></div></div>
         <label class="cat" style="display:block;margin-top:10px">Length — <span id="pwdLenLabel">16</span></label>
         <input type="range" id="pwdLen" min="6" max="48" value="16" oninput="document.getElementById('pwdLenLabel').textContent=this.value">
@@ -434,7 +442,7 @@ img,canvas,svg,video{max-width:100%}
 
       <!-- WORD COUNTER -->
       <div class="panel" id="panel-words">
-        <textarea class="code" id="wordIn" placeholder="Apna text yahan likho ya paste karo — counting live hogi…" oninput="countWords()"></textarea>
+        <textarea class="code" id="wordIn" placeholder="Type or paste your text here — counting is live…" oninput="countWords()"></textarea>
         <div class="kv">
           <div><b id="wcWords">0</b><span>Words</span></div>
           <div><b id="wcChars">0</b><span>Characters</span></div>
@@ -463,8 +471,8 @@ img,canvas,svg,video{max-width:100%}
       <!-- IMAGE COMPRESSOR -->
       <div class="panel" id="panel-image">
         <div class="drop" id="dropZone" onclick="document.getElementById('imgFile').click()">
-          <div style="font-size:34px">🖼️</div><b>Image select karo ya yahan drop karo</b>
-          <p>JPG / PNG / WEBP — image tumhare browser mein hi compress hoti hai, kahin upload nahi hoti.</p>
+          <div style="font-size:34px">🖼️</div><b>Select an image or drop it here</b>
+          <p>JPG / PNG / WEBP — the image is compressed in your browser, it is never uploaded anywhere.</p>
         </div>
         <input type="file" id="imgFile" accept="image/*" class="hidden-file" onchange="loadImage(this.files[0])">
         <label class="cat" style="display:block;margin-top:14px">Quality — <span id="qLabel">70%</span></label>
@@ -484,12 +492,12 @@ img,canvas,svg,video{max-width:100%}
       <!-- UUID -->
       <div class="panel" id="panel-uuid">
         <div class="btn-row" style="margin-top:0"><button class="btn btn-dark" onclick="genUUID(1)">Generate 1 UUID</button><button class="btn" onclick="genUUID(10)">Generate 10</button><button class="btn" onclick="copyText(uuidList.join('\n'))">Copy All</button></div>
-        <pre class="out" id="uuidOut" style="min-height:90px">UUIDs yahan ayenge…</pre>
+        <pre class="out" id="uuidOut" style="min-height:90px">UUIDs will appear here…</pre>
       </div>
 
       <!-- URL + CASE -->
       <div class="panel" id="panel-url">
-        <textarea class="code" id="urlIn" placeholder="Text / URL yahan likho…"></textarea>
+        <textarea class="code" id="urlIn" placeholder="Type text / URL here…"></textarea>
         <div class="btn-row">
           <button class="btn btn-dark" onclick="urlTransform('enc')">URL Encode</button>
           <button class="btn" onclick="urlTransform('dec')">URL Decode</button>
@@ -504,7 +512,7 @@ img,canvas,svg,video{max-width:100%}
 
       <!-- HASH -->
       <div class="panel" id="panel-hash">
-        <textarea class="code" id="hashIn" placeholder="Hash karne ke liye text likho…" style="min-height:90px"></textarea>
+        <textarea class="code" id="hashIn" placeholder="Type text to hash…" style="min-height:90px"></textarea>
         <div class="btn-row"><button class="btn btn-dark" onclick="genHashes()">Generate Hashes</button></div>
         <label class="cat">SHA-1</label><div class="hash-out" id="h1">—</div>
         <label class="cat" style="display:block;margin-top:10px">SHA-256</label><div class="hash-out" id="h256">—</div>
@@ -594,8 +602,8 @@ img,canvas,svg,video{max-width:100%}
 
       <!-- CUSTOM GENERIC -->
       <div class="panel" id="panel-custom">
-        <div class="admin-note" style="border-radius:10px;padding:12px;font-size:14px;line-height:1.6">⭐ Ye tool <b>Admin Panel</b> se add kiya gaya hai. Iska apna workspace ready hai — neeche apna text / notes likho, transform karo aur copy kar lo.</div>
-        <textarea class="code" id="customIn" placeholder="Yahan apna text likho…" style="margin-top:12px"></textarea>
+        <div class="admin-note" style="border-radius:10px;padding:12px;font-size:14px;line-height:1.6">⭐ This tool was added from the <b>Admin Panel</b>. Its workspace is ready — write your text / notes below, transform it and copy it.</div>
+        <textarea class="code" id="customIn" placeholder="Type your text here…" style="margin-top:12px"></textarea>
         <div class="btn-row">
           <button class="btn btn-dark" onclick="customTransform('upper')">UPPERCASE</button>
           <button class="btn" onclick="customTransform('lower')">lowercase</button>
@@ -611,7 +619,7 @@ img,canvas,svg,video{max-width:100%}
   <section class="community">
     <div class="eyebrow">Stay Connected</div>
     <h2>Join the Community</h2>
-    <p>New tools, updates aur announcements sabse pehle milein.</p>
+    <p>New tools, updates and announcements — be the first to know.</p>
     <a class="comm-card" style="--acc:#2aabee" href="https://t.me/buntymain" target="_blank" rel="noopener">
       <span class="comm-ico" style="--tilebg:rgba(42,171,238,.14);background:rgba(42,171,238,.14)">✈️</span>
       <span class="comm-txt"><b>Telegram Channel</b><i>@buntymain</i></span>
@@ -631,7 +639,7 @@ img,canvas,svg,video{max-width:100%}
 
   <footer>
     <b>All-in-One Dev Toolkit</b><br>
-    Saare tools tumhare browser mein chalte hain — koi sign-up nahi, sab free.
+    All tools run in your browser — no sign-up, everything is free.
   
   </footer>
 </div>
@@ -656,8 +664,8 @@ function isDarkTile(t){var g=tileGrad(t);return g==='#26262b'||g==='#3f3f46'}
 function tileGrad(t){return TILE_GRADS[t.id]||CAT_GRADS[t.cat]||CAT_GRADS.Custom}
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},1800)}
-function copyText(txt){if(!txt){toast('Copy karne ke liye kuch nahi hai');return} if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast('✓ Copied to clipboard')},function(){fallbackCopy(txt)})}else{fallbackCopy(txt)}}
-function fallbackCopy(txt){var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('✓ Copied to clipboard')}catch(e){toast('Copy nahi ho saka')}document.body.removeChild(ta)}
+function copyText(txt){if(!txt){toast('Nothing to copy');return} if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast('✓ Copied to clipboard')},function(){fallbackCopy(txt)})}else{fallbackCopy(txt)}}
+function fallbackCopy(txt){var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('✓ Copied to clipboard')}catch(e){toast('Copy failed')}document.body.removeChild(ta)}
 
 function renderGrid(){
   var q=(document.getElementById('searchInput').value||'').toLowerCase().trim();
@@ -690,7 +698,7 @@ function renderGrid(){
   document.getElementById('statCustom').textContent=tools.filter(function(t){return t.custom}).length;
   document.getElementById('statFav').textContent=favorites.size;
 }
-function toggleFav(id){if(favorites.has(id)){favorites.delete(id)}else{favorites.add(id);toast('★ Favorite mein add ho gaya')}renderGrid()}
+function toggleFav(id){if(favorites.has(id)){favorites.delete(id)}else{favorites.add(id);toast('★ Added to favorites')}renderGrid()}
 function toggleFavFilter(){favOnly=!favOnly;document.getElementById('favFilterBtn').classList.toggle('btn-dark',favOnly);renderGrid()}
 function setCat(cat,el){currentCat=cat;var pills=document.querySelectorAll('#catPills .pill');pills.forEach(function(p){p.classList.remove('active')});el.classList.add('active');renderGrid()}
 document.getElementById('searchInput').addEventListener('input',renderGrid);
@@ -724,7 +732,7 @@ function toggleAdmin(){
   if(atb){atb.classList.toggle('admin-on',adminMode);atb.textContent=adminMode?'⚙️ Admin Mode: ON':'⚙️ Admin Mode'}
   var att=document.getElementById('adminToggleTop');
   if(att){att.textContent=adminMode?'⚙️ Admin Mode: ON — Panel Open':'⚙️ Open Admin Panel'}
-  if(adminMode){document.getElementById('adminPanel').scrollIntoView({behavior:'smooth',block:'nearest'});toast('⚙️ Admin Mode ON — ✕ se tools remove karo')}
+  if(adminMode){document.getElementById('adminPanel').scrollIntoView({behavior:'smooth',block:'nearest'});toast('⚙️ Admin Mode ON — remove tools with the ✕ on each card')}
   renderGrid();
 }
 function addCustomTool(){
@@ -733,10 +741,10 @@ function addCustomTool(){
   var icon=document.getElementById('newIcon').value.trim()||'🛠️';
   var cat=document.getElementById('newCat').value;
   var msg=document.getElementById('adminMsg');
-  if(!name||!desc){msg.textContent='⚠ Tool Name aur Description dono zaroori hain.';msg.className='msg err';return}
+  if(!name||!desc){msg.textContent='⚠ Tool Name and Description are both required.';msg.className='msg err';return}
   var id='custom-'+Date.now();
   tools.push({id:id,emoji:icon,name:name,cat:cat,desc:desc,custom:true});
-  msg.textContent='✓ "'+name+'" add ho gaya! Grid mein card aa gaya hai.';msg.className='msg ok';
+  msg.textContent='✓ "'+name+'" added! Its card is now in the grid.';msg.className='msg ok';
   document.getElementById('newName').value='';document.getElementById('newDesc').value='';
   renderGrid();toast('➕ New tool added: '+name);
 }
@@ -748,37 +756,37 @@ function removeTool(id){
   renderGrid();toast('🗑️ Removed: '+(t?t.name:'tool'));
 }
 function closeWorkspaceSilent(){document.getElementById('workspace').classList.remove('open');activeTool=null}
-function clearCustom(){tools=tools.filter(function(t){return !t.custom});renderGrid();toast('Custom tools delete ho gaye')}
+function clearCustom(){tools=tools.filter(function(t){return !t.custom});renderGrid();toast('Custom tools deleted')}
 function restoreDefaults(){
   var customs=tools.filter(function(t){return t.custom});
   tools=DEFAULT_TOOLS.slice().concat(customs);
-  renderGrid();toast('↩️ Saare default tools restore ho gaye');
+  renderGrid();toast('↩️ All default tools restored');
 }
 
 /* JSON */
 function jsonParse(){return JSON.parse(document.getElementById('jsonIn').value)}
-function jsonFormat(){var m=document.getElementById('jsonMsg');try{var o=jsonParse();document.getElementById('jsonOut').textContent=JSON.stringify(o,null,2);m.textContent='✓ Valid JSON — format ho gaya.';m.className='msg ok'}catch(e){m.textContent='✕ Error: '+e.message;m.className='msg err'}}
-function jsonMinify(){var m=document.getElementById('jsonMsg');try{var o=jsonParse();document.getElementById('jsonOut').textContent=JSON.stringify(o);m.textContent='✓ Minify ho gaya.';m.className='msg ok'}catch(e){m.textContent='✕ Error: '+e.message;m.className='msg err'}}
-function jsonValidate(){var m=document.getElementById('jsonMsg');try{jsonParse();m.textContent='✓ Valid JSON hai.';m.className='msg ok'}catch(e){m.textContent='✕ Invalid JSON: '+e.message;m.className='msg err'}}
+function jsonFormat(){var m=document.getElementById('jsonMsg');try{var o=jsonParse();document.getElementById('jsonOut').textContent=JSON.stringify(o,null,2);m.textContent='✓ Valid JSON — formatted.';m.className='msg ok'}catch(e){m.textContent='✕ Error: '+e.message;m.className='msg err'}}
+function jsonMinify(){var m=document.getElementById('jsonMsg');try{var o=jsonParse();document.getElementById('jsonOut').textContent=JSON.stringify(o);m.textContent='✓ Minified.';m.className='msg ok'}catch(e){m.textContent='✕ Error: '+e.message;m.className='msg err'}}
+function jsonValidate(){var m=document.getElementById('jsonMsg');try{jsonParse();m.textContent='✓ This is valid JSON.';m.className='msg ok'}catch(e){m.textContent='✕ Invalid JSON: '+e.message;m.className='msg err'}}
 
 /* BASE64 */
-function b64Encode(){var v=document.getElementById('b64In').value;try{document.getElementById('b64Out').textContent=btoa(unescape(encodeURIComponent(v)));setB64('✓ Encode ho gaya','ok')}catch(e){setB64('✕ '+e.message,'err')}}
-function b64Decode(){var v=document.getElementById('b64In').value.trim();try{document.getElementById('b64Out').textContent=decodeURIComponent(escape(atob(v)));setB64('✓ Decode ho gaya','ok')}catch(e){setB64('✕ Invalid Base64 hai.','err')}}
+function b64Encode(){var v=document.getElementById('b64In').value;try{document.getElementById('b64Out').textContent=btoa(unescape(encodeURIComponent(v)));setB64('✓ Encoded','ok')}catch(e){setB64('✕ '+e.message,'err')}}
+function b64Decode(){var v=document.getElementById('b64In').value.trim();try{document.getElementById('b64Out').textContent=decodeURIComponent(escape(atob(v)));setB64('✓ Decoded','ok')}catch(e){setB64('✕ Invalid Base64.','err')}}
 function setB64(t,c){var m=document.getElementById('b64Msg');m.textContent=t;m.className='msg '+c}
 
 /* QR */
 function makeQR(){
   var text=document.getElementById('qrText').value.trim();var box=document.getElementById('qrBox');var msg=document.getElementById('qrMsg');
-  if(!text){msg.textContent='⚠ Pehle text ya link likho.';msg.className='msg err';return}
+  if(!text){msg.textContent='⚠ Enter text or a link first.';msg.className='msg err';return}
   var size=parseInt(document.getElementById('qrSize').value,10);
   box.innerHTML='';
-  if(typeof QRCode!=='undefined'){new QRCode(box,{text:text,width:size,height:size,correctLevel:QRCode.CorrectLevel.M});msg.textContent='✓ QR ready hai — Download dabao.';msg.className='msg ok'}
-  else{box.innerHTML='<span style="color:#666;font-size:13px">QR library load nahi hui</span>';msg.textContent='✕ QR library load nahi hui — page refresh karke dobara try karo.';msg.className='msg err'}
+  if(typeof QRCode!=='undefined'){new QRCode(box,{text:text,width:size,height:size,correctLevel:QRCode.CorrectLevel.M});msg.textContent='✓ QR is ready — press Download.';msg.className='msg ok'}
+  else{box.innerHTML='<span style="color:#666;font-size:13px">QR library failed to load</span>';msg.textContent='✕ QR library failed to load — refresh the page and try again.';msg.className='msg err'}
 }
 function downloadQR(){
   var box=document.getElementById('qrBox');var canvas=box.querySelector('canvas');var img=box.querySelector('img');var url=null;
   if(canvas)url=canvas.toDataURL('image/png');else if(img)url=img.src;
-  if(!url){toast('Pehle QR generate karo');return}
+  if(!url){toast('Generate the QR first');return}
   var a=document.createElement('a');a.href=url;a.download='qr-code.png';a.target='_blank';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
@@ -786,12 +794,12 @@ function downloadQR(){
 function genPassword(){
   var len=parseInt(document.getElementById('pwdLen').value,10);
   var sets='';if(document.getElementById('pwdLower').checked)sets+='abcdefghijklmnopqrstuvwxyz';if(document.getElementById('pwdUpper').checked)sets+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';if(document.getElementById('pwdNum').checked)sets+='0123456789';if(document.getElementById('pwdSym').checked)sets+='!@#$%^&*()_+-=[]{};:,.<>?';
-  if(!sets){document.getElementById('pwdStrength').textContent='⚠ Kam az kam aik option select karo.';return}
+  if(!sets){document.getElementById('pwdStrength').textContent='⚠ Select at least one option.';return}
   var arr=new Uint32Array(len);crypto.getRandomValues(arr);var pwd='';for(var i=0;i<len;i++)pwd+=sets[arr[i]%sets.length];
   currentPassword=pwd;document.getElementById('pwdOut').textContent=pwd;
   var score=0;if(len>=12)score++;if(len>=20)score++;if(/[A-Z]/.test(pwd)&&/[a-z]/.test(pwd))score++;if(/\d/.test(pwd))score++;if(/[^A-Za-z0-9]/.test(pwd))score++;
   var pct=Math.min(100,score*22);var bar=document.getElementById('strengthBar');bar.style.width=pct+'%';bar.style.background=score<=2?'#52525b':score<=3?'#a1a1aa':'#f4f4f5';
-  document.getElementById('pwdStrength').textContent='Strength: '+(score<=2?'Weak — lamba karo':score<=3?'Medium — theek hai':'Strong 💪 — zabardast!');
+  document.getElementById('pwdStrength').textContent='Strength: '+(score<=2?'Weak — make it longer':score<=3?'Medium — acceptable':'Strong 💪 — excellent!');
 }
 
 /* WORDS */
@@ -827,7 +835,7 @@ dz.addEventListener('dragleave',function(){dz.style.borderColor=''});
 dz.addEventListener('drop',function(e){e.preventDefault();dz.style.borderColor='';if(e.dataTransfer.files[0])loadImage(e.dataTransfer.files[0])});
 function fmtSize(b){if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1)+' KB';return (b/1048576).toFixed(2)+' MB'}
 function loadImage(file){
-  if(!file||!file.type.startsWith('image/')){document.getElementById('imgMsg').textContent='⚠ Sirf image file select karo.';return}
+  if(!file||!file.type.startsWith('image/')){document.getElementById('imgMsg').textContent='⚠ Please select an image file only.';return}
   document.getElementById('origSize').textContent=fmtSize(file.size);
   var url=URL.createObjectURL(file);var prev=document.getElementById('origPrev');prev.src=url;prev.style.display='block';
   var img=new Image();img.onload=function(){currentImg=img;compressImage()};img.src=url;
@@ -841,7 +849,7 @@ function compressImage(){
     document.getElementById('compSize').textContent=fmtSize(blob.size);
     var cp=document.getElementById('compPrev');cp.src=compressedUrl;cp.style.display='block';
     document.getElementById('dlImgBtn').style.display='inline-flex';
-    document.getElementById('imgMsg').textContent='✓ Compress ho gaya — Download dabao.';document.getElementById('imgMsg').className='msg ok';
+    document.getElementById('imgMsg').textContent='✓ Compressed — press Download.';document.getElementById('imgMsg').className='msg ok';
   },'image/jpeg',q);
 }
 function downloadCompressed(){if(!compressedUrl)return;var a=document.createElement('a');a.href=compressedUrl;a.download='compressed-image.jpg';document.body.appendChild(a);a.click();document.body.removeChild(a)}
@@ -856,12 +864,12 @@ function caseTransform(m){var v=document.getElementById('urlIn').value;var o=v;i
 
 /* HASH */
 async function sha(algo,text){var buf=await crypto.subtle.digest(algo,new TextEncoder().encode(text));return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('')}
-async function genHashes(){var v=document.getElementById('hashIn').value;if(!v){toast('Pehle text likho');return}document.getElementById('h1').textContent=await sha('SHA-1',v);document.getElementById('h256').textContent=await sha('SHA-256',v);document.getElementById('h512').textContent=await sha('SHA-512',v)}
+async function genHashes(){var v=document.getElementById('hashIn').value;if(!v){toast('Enter text first');return}document.getElementById('h1').textContent=await sha('SHA-1',v);document.getElementById('h256').textContent=await sha('SHA-256',v);document.getElementById('h512').textContent=await sha('SHA-512',v)}
 
 /* TIME */
 function updateNow(){var n=new Date();document.getElementById('nowUnix').textContent=Math.floor(n.getTime()/1000);document.getElementById('nowDate').textContent=n.toLocaleString()}
-function tsToDate(){var v=parseInt(document.getElementById('tsIn').value,10);var o=document.getElementById('tsOut');if(isNaN(v)){o.textContent='⚠ Valid timestamp likho.';o.className='msg err';return}var d=new Date(v*1000);o.textContent='📅 '+d.toLocaleString()+'  •  '+d.toUTCString();o.className='msg ok'}
-function dateToTs(){var v=document.getElementById('dateIn').value;var o=document.getElementById('dateOut');if(!v){o.textContent='⚠ Date select karo.';o.className='msg err';return}o.textContent='⏱️ Unix: '+Math.floor(new Date(v).getTime()/1000);o.className='msg ok'}
+function tsToDate(){var v=parseInt(document.getElementById('tsIn').value,10);var o=document.getElementById('tsOut');if(isNaN(v)){o.textContent='⚠ Enter a valid timestamp.';o.className='msg err';return}var d=new Date(v*1000);o.textContent='📅 '+d.toLocaleString()+'  •  '+d.toUTCString();o.className='msg ok'}
+function dateToTs(){var v=document.getElementById('dateIn').value;var o=document.getElementById('dateOut');if(!v){o.textContent='⚠ Select a date.';o.className='msg err';return}o.textContent='⏱️ Unix: '+Math.floor(new Date(v).getTime()/1000);o.className='msg ok'}
 
 /* LOREM */
 function genLorem(){
@@ -876,15 +884,15 @@ function customTransform(m){var ta=document.getElementById('customIn');if(m==='u
 
 
 /* AGE */
-function calcAge(){var v=document.getElementById('ageDob').value;var m=document.getElementById('ageOut');if(!v){m.textContent='⚠ Pehle date of birth select karo.';m.className='msg err';return}var d=new Date(v+'T00:00:00'),now=new Date();if(d>now){m.textContent='⚠ Date mustaqbil ki hai.';m.className='msg err';return}var y=now.getFullYear()-d.getFullYear(),mo=now.getMonth()-d.getMonth(),da=now.getDate()-d.getDate();if(da<0){mo--;da+=new Date(now.getFullYear(),now.getMonth(),0).getDate()}if(mo<0){y--;mo+=12}var days=Math.floor((now-d)/864e5);m.textContent='✓ Age: '+y+' saal, '+mo+' mahine, '+da+' din — total '+days.toLocaleString()+' din.';m.className='msg ok'}
+function calcAge(){var v=document.getElementById('ageDob').value;var m=document.getElementById('ageOut');if(!v){m.textContent='⚠ Select your date of birth first.';m.className='msg err';return}var d=new Date(v+'T00:00:00'),now=new Date();if(d>now){m.textContent='⚠ That date is in the future.';m.className='msg err';return}var y=now.getFullYear()-d.getFullYear(),mo=now.getMonth()-d.getMonth(),da=now.getDate()-d.getDate();if(da<0){mo--;da+=new Date(now.getFullYear(),now.getMonth(),0).getDate()}if(mo<0){y--;mo+=12}var days=Math.floor((now-d)/864e5);m.textContent='✓ Age: '+y+' years, '+mo+' months, '+da+' days — total '+days.toLocaleString()+' days.';m.className='msg ok'}
 /* BMI */
-function calcBMI(){var w=parseFloat(document.getElementById('bmiW').value),h=parseFloat(document.getElementById('bmiH').value)/100,m=document.getElementById('bmiOut');if(!w||!h){m.textContent='⚠ Weight aur height dono likho.';m.className='msg err';return}var b=w/(h*h),cat=b<18.5?'Underweight':b<25?'Normal ✓':b<30?'Overweight':'Obese';m.textContent='✓ BMI: '+b.toFixed(1)+' — '+cat;m.className='msg ok'}
+function calcBMI(){var w=parseFloat(document.getElementById('bmiW').value),h=parseFloat(document.getElementById('bmiH').value)/100,m=document.getElementById('bmiOut');if(!w||!h){m.textContent='⚠ Enter both weight and height.';m.className='msg err';return}var b=w/(h*h),cat=b<18.5?'Underweight':b<25?'Normal ✓':b<30?'Overweight':'Obese';m.textContent='✓ BMI: '+b.toFixed(1)+' — '+cat;m.className='msg ok'}
 /* PERCENT */
-function calcPct(){var a=parseFloat(document.getElementById('pctA').value),b=parseFloat(document.getElementById('pctB').value),m=document.getElementById('pctOut');if(isNaN(a)||isNaN(b)||b===0){m.textContent='⚠ Dono values sahi likho.';m.className='msg err';return}m.textContent='✓ '+a+' is '+(a/b*100).toFixed(2)+'% of '+b+' — aur '+b+' ka '+a+'% = '+(b*a/100).toFixed(2);m.className='msg ok'}
+function calcPct(){var a=parseFloat(document.getElementById('pctA').value),b=parseFloat(document.getElementById('pctB').value),m=document.getElementById('pctOut');if(isNaN(a)||isNaN(b)||b===0){m.textContent='⚠ Enter both values correctly.';m.className='msg err';return}m.textContent='✓ '+a+' is '+(a/b*100).toFixed(2)+'% of '+b+' — aur '+b+' ka '+a+'% = '+(b*a/100).toFixed(2);m.className='msg ok'}
 /* RANDOM */
-function genRandom(){var mn=parseInt(document.getElementById('rndMin').value,10),mx=parseInt(document.getElementById('rndMax').value,10),n=parseInt(document.getElementById('rndCount').value,10);if(isNaN(mn)||isNaN(mx)||mx<=mn){document.getElementById('rndOut').textContent='⚠ Max, Min se bara hona chahiye.';return}var s=new Set();var guard=0;while(s.size<Math.min(n,mx-mn+1)&&guard++<5000){s.add(mn+Math.floor(Math.random()*(mx-mn+1)))}document.getElementById('rndOut').textContent=Array.from(s).join(', ')}
+function genRandom(){var mn=parseInt(document.getElementById('rndMin').value,10),mx=parseInt(document.getElementById('rndMax').value,10),n=parseInt(document.getElementById('rndCount').value,10);if(isNaN(mn)||isNaN(mx)||mx<=mn){document.getElementById('rndOut').textContent='⚠ Max must be greater than Min.';return}var s=new Set();var guard=0;while(s.size<Math.min(n,mx-mn+1)&&guard++<5000){s.add(mn+Math.floor(Math.random()*(mx-mn+1)))}document.getElementById('rndOut').textContent=Array.from(s).join(', ')}
 /* UNIT */
-function convUnit(){var v=parseFloat(document.getElementById('unitVal').value),f=document.getElementById('unitFrom').value,t=document.getElementById('unitTo').value,m=document.getElementById('unitOut');if(isNaN(v)){m.textContent='⚠ Value likho.';m.className='msg err';return}var L={m:1,km:1000,mi:1609.34,ft:0.3048},W={kg:1,lb:0.453592};var out=null;if(L[f]&&L[t])out=v*L[f]/L[t];else if(W[f]&&W[t])out=v*W[f]/W[t];else if((f==='c'&&t==='f'))out=v*9/5+32;else if(f==='f'&&t==='c')out=(v-32)*5/9;else if(f===t)out=v;if(out===null){m.textContent='⚠ Ye dono units aik category ke nahi hain (length / weight / temperature alag alag).';m.className='msg err';return}m.textContent='✓ '+v+' '+f.toUpperCase()+' = '+parseFloat(out.toFixed(4))+' '+t.toUpperCase();m.className='msg ok'}
+function convUnit(){var v=parseFloat(document.getElementById('unitVal').value),f=document.getElementById('unitFrom').value,t=document.getElementById('unitTo').value,m=document.getElementById('unitOut');if(isNaN(v)){m.textContent='⚠ Enter a value.';m.className='msg err';return}var L={m:1,km:1000,mi:1609.34,ft:0.3048},W={kg:1,lb:0.453592};var out=null;if(L[f]&&L[t])out=v*L[f]/L[t];else if(W[f]&&W[t])out=v*W[f]/W[t];else if((f==='c'&&t==='f'))out=v*9/5+32;else if(f==='f'&&t==='c')out=(v-32)*5/9;else if(f===t)out=v;if(out===null){m.textContent='⚠ These two units are not in the same category (length / weight / temperature are separate).';m.className='msg err';return}m.textContent='✓ '+v+' '+f.toUpperCase()+' = '+parseFloat(out.toFixed(4))+' '+t.toUpperCase();m.className='msg ok'}
 /* STOPWATCH */
 var swT=null,swStartT=0,swElapsed=0,swLapN=0;
 function swFmt(ms){var cs=Math.floor(ms/10)%100,s=Math.floor(ms/1000)%60,mi=Math.floor(ms/60000);function p(x){return(x<10?'0':'')+x}return p(mi)+':'+p(s)+'.'+p(cs)}
@@ -910,24 +918,27 @@ try{
 <script>
 /* Global tools sync + site settings — admin changes show for everyone */
 var tkSettings={bgType:'none',bgUrl:''};
-function tkKey(){var k=sessionStorage.getItem('tk_admin_key');if(!k){k=prompt('Admin key likho:');if(k)sessionStorage.setItem('tk_admin_key',k);}return k;}
+function tkKey(){var k=sessionStorage.getItem('tk_admin_key');if(!k){k=prompt('Enter admin key:');if(k)sessionStorage.setItem('tk_admin_key',k);}return k;}
 function tkPost(payload,okMsg){
   var key=tkKey();if(!key)return;
   fetch('/api/tools',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify(payload)})
-  .then(function(r){if(r.status===401){sessionStorage.removeItem('tk_admin_key');alert('Wrong admin key — dobara try karo.');}else if(r.ok){if(okMsg)toast(okMsg);}else{r.json().then(function(d){alert('Save nahi hua: '+(d.error||r.status))})}})
-  .catch(function(){alert('Save nahi hua — net check karo.')});
+  .then(function(r){if(r.status===401){sessionStorage.removeItem('tk_admin_key');alert('Wrong admin key — try again.');}else if(r.ok){if(okMsg)toast(okMsg);}else{r.json().then(function(d){alert('Could not save: '+(d.error||r.status))})}})
+  .catch(function(){alert('Could not save — check your connection.')});
 }
-function tkSync(){tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},'Tool publish ho gaya — ab sab ko show hoga');}
+function tkSync(){tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},'Tool published — now visible to everyone');}
 function tkSaveSettings(){
-  tkSettings={bgType:document.getElementById('bgType').value,bgUrl:document.getElementById('bgUrl').value.trim()};
+  var bt=document.getElementById('bgType').value,bu=document.getElementById('bgUrl').value.trim();
+  if(bu&&bt==='none'){bt='video';document.getElementById('bgType').value='video';}
+  tkSettings={bgType:bt,bgUrl:bu};
   tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},null);
-  var m=document.getElementById('bgMsg');if(m){m.textContent='✓ Options save ho gaye — sab visitors ko yahi background show hoga.';m.className='msg ok';}
+  var m=document.getElementById('bgMsg');if(m){m.textContent='✓ Options saved — all visitors will see this background.';m.className='msg ok';}
   tkApplyBg();
 }
 var tkAnimId=null;
 function tkStopBg(){var c=document.getElementById('bgCanvas'),v=document.getElementById('bgVideo');if(c)c.hidden=true;if(v){v.hidden=true;v.pause();}if(tkAnimId){cancelAnimationFrame(tkAnimId);tkAnimId=null;}}
 function tkStartAnim(){
   var c=document.getElementById('bgCanvas');if(!c)return;c.hidden=false;
+  var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var ctx=c.getContext('2d'),W,H,pts=[];
   function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
   resize();window.addEventListener('resize',resize);
@@ -937,7 +948,7 @@ function tkStartAnim(){
     ctx.clearRect(0,0,W,H);
     pts.forEach(function(a){
       a.x+=a.vx;a.y+=a.vy;if(a.x<0||a.x>W)a.vx*=-1;if(a.y<0||a.y>H)a.vy*=-1;
-      ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,7);ctx.fillStyle='rgba(244,244,245,.7)';ctx.fill();
+      ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,7);ctx.fillStyle=tkLight?'rgba(24,24,27,.55)':'rgba(244,244,245,.7)';ctx.fill();
       pts.forEach(function(b){var dx=a.x-b.x,dy=a.y-b.y,d=dx*dx+dy*dy;if(d<12100){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle='rgba(161,161,170,'+(0.14*(1-d/12100))+')';ctx.stroke();}});
     });
     tkAnimId=requestAnimationFrame(loop);
@@ -945,8 +956,9 @@ function tkStartAnim(){
 }
 function tkApplyBg(){
   tkStopBg();
-  if(tkSettings.bgType==='anim'){tkStartAnim();}
-  else if(tkSettings.bgType==='video'&&tkSettings.bgUrl){var v=document.getElementById('bgVideo');v.src=tkSettings.bgUrl;v.hidden=false;v.play().catch(function(){});}
+  var eff=(tkSettings.bgType==='none'&&tkSettings.bgUrl)?'video':tkSettings.bgType;
+  if(eff==='anim'){tkStartAnim();}
+  else if(eff==='video'&&tkSettings.bgUrl){var v=document.getElementById('bgVideo');v.src=tkSettings.bgUrl;v.hidden=false;v.play().catch(function(){});}
 }
 window.addEventListener('load',function(){
   fetch('/api/tools').then(function(r){return r.json()}).then(function(d){
@@ -958,6 +970,18 @@ window.addEventListener('load',function(){
   var _rm=window.removeTool; window.removeTool=function(id){var wasCustom=tools.some(function(t){return t.id===id&&t.custom});_rm(id); if(wasCustom)tkSync();};
   var _cc=window.clearCustom; window.clearCustom=function(){_cc(); tkSync();};
 });
+</script>
+
+<script>
+try{var _t=localStorage.getItem('tk_theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}
+function tkTheme(){
+  var cur=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+  if(cur==='dark')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme','light');
+  try{localStorage.setItem('tk_theme',cur);}catch(e){}
+  var b=document.getElementById('themeBtn');if(b)b.textContent=cur==='light'?'🌗 Dark Mode':'🌗 Light Mode';
+  if(typeof tkApplyBg==='function'&&window.tkSettings&&tkSettings.bgType==='anim')tkApplyBg();
+}
+window.addEventListener('DOMContentLoaded',function(){var b=document.getElementById('themeBtn');if(b&&document.documentElement.getAttribute('data-theme')==='light')b.textContent='🌗 Dark Mode';});
 </script>
 </body>
 </html>
