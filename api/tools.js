@@ -21,6 +21,7 @@ module.exports = async (req, res) => {
     if (req.headers['x-admin-key'] !== process.env.ADMIN_KEY) return res.status(401).json({ error: 'Wrong admin key' });
     let body = req.body;
     if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) { body = {}; } }
+    if (body && body.verify) return res.status(200).json({ ok: true });
     const clean = (Array.isArray(body && body.tools) ? body.tools : []).slice(0, 100).map(t => ({
       id: String(t.id || ('custom-' + Date.now())),
       emoji: String(t.emoji || '🛠️').slice(0, 8),
