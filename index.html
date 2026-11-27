@@ -413,7 +413,7 @@ img,canvas,svg,video{max-width:100%}
           <select id="bgType"><option value="none">None (plain)</option><option value="anim">Animated (live particles — video-like)</option><option value="video">Video URL (mp4/webm)</option></select>
         </div>
         <div class="field"><label for="bgUrl">Video URL (only for the Video type)</label><input type="text" id="bgUrl" placeholder="https://example.com/video.mp4"></div>
-        <div class="field"><label for="gaId">Google Analytics ID</label><input type="text" id="gaId" placeholder="G-XXXXXXXXXX"></div><div class="field"><label for="mntMsg">Maintenance Message</label><input type="text" id="mntMsg" placeholder="We are adding new tools — back soon!"></div><div class="field"><label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-family:var(--sans);text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink-2)"><input type="checkbox" id="mntToggle" style="width:18px;height:18px;accent-color:#22c55e"> 🔧 Maintenance Mode — visitors see a closed page (you still get in via /admin)</label></div><p class="admin-note" style="margin-bottom:12px">↕️ <b>Drag &amp; Drop:</b> In Admin mode, drag any tool card to change its order — the new order is saved for everyone.</p><button class="btn btn-dark" style="width:100%" onclick="tkSaveSettings()">💾 Save Options — Visible to Everyone</button>
+        <div class="field"><label for="gaId">Google Analytics ID</label><input type="text" id="gaId" placeholder="G-XXXXXXXXXX"></div><div class="field"><label for="mntMsg">Maintenance Message</label><input type="text" id="mntMsg" placeholder="We are adding new tools — back soon!"></div><div class="field"><label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-family:var(--sans);text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink-2)"><input type="checkbox" id="mntToggle" style="width:18px;height:18px;accent-color:#22c55e"> 🔧 Maintenance Mode — visitors see a closed page (you still get in via /admin)</label></div><div class="field"><label for="dlName">Downloads — File Name</label><input type="text" id="dlName" placeholder="e.g. Ahmad MD Setup Guide (PDF)"><input type="file" id="dlFile" style="margin-top:9px;width:100%"></div><button class="btn" style="width:100%" onclick="tkUploadDl()">⬆️ Upload &amp; Add Download (max ~3.5 MB)</button><div class="msg" id="dlMsg" style="margin-top:8px"></div><div id="dlList" style="margin:10px 0 14px"></div><p class="admin-note" style="margin-bottom:12px">↕️ <b>Drag &amp; Drop:</b> In Admin mode, drag any tool card to change its order — the new order is saved for everyone.</p><button class="btn btn-dark" style="width:100%" onclick="tkSaveSettings()">💾 Save Options — Visible to Everyone</button>
         <div class="msg" id="bgMsg" style="margin-top:8px"></div>
       </div>
     </section>
@@ -667,6 +667,7 @@ img,canvas,svg,video{max-width:100%}
 
 
 
+
       <!-- CUSTOM GENERIC -->
       <div class="panel" id="panel-custom">
         <div class="admin-note" style="border-radius:10px;padding:12px;font-size:14px;line-height:1.6">⭐ This tool was added from the <b>Admin Panel</b>. Its workspace is ready — write your text / notes below, transform it and copy it.</div>
@@ -681,6 +682,13 @@ img,canvas,svg,video{max-width:100%}
       </div>
 
     </div>
+  </section>
+
+<section class="community" id="downloadsSec" hidden>
+    <div class="eyebrow">Free Downloads</div>
+    <h2>Downloads</h2>
+    <p>Files and guides by Dev Ahmad — free for everyone.</p>
+    <div id="dlGrid"></div>
   </section>
 
   <section class="community">
@@ -1004,6 +1012,8 @@ function tkSaveSettings(){
   tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
   var _mt=document.getElementById('mntToggle'),_mm=document.getElementById('mntMsg'),_ga=document.getElementById('gaId');
   tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
+  var _mt=document.getElementById('mntToggle'),_mm=document.getElementById('mntMsg'),_ga=document.getElementById('gaId');
+  tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
   tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},null);
   var m=document.getElementById('bgMsg');if(m){m.textContent='✓ Options saved — all visitors will see this background.';m.className='msg ok';}
   tkApplyBg();
@@ -1012,6 +1022,7 @@ var tkAnimId=null;
 function tkStopBg(){var c=document.getElementById('bgCanvas'),v=document.getElementById('bgVideo');if(c)c.hidden=true;if(v){v.hidden=true;v.pause();}if(tkAnimId){cancelAnimationFrame(tkAnimId);tkAnimId=null;}}
 function tkStartAnim(){
   var c=document.getElementById('bgCanvas');if(!c)return;c.hidden=false;
+  var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
@@ -1120,6 +1131,45 @@ window.addEventListener('load',function(){
 });
 
 
+
+</script>
+
+<script>
+/* extras-dl */
+function tkFmtSize(b){if(!b&&b!==0)return '';if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1)+' KB';return (b/1048576).toFixed(2)+' MB';}
+function tkDlList(){return (window.tkSettings&&Array.isArray(tkSettings.downloads))?tkSettings.downloads:[];}
+function tkRenderDl(){
+  var list=tkDlList();
+  var grid=document.getElementById('dlGrid'),sec=document.getElementById('downloadsSec');
+  if(grid){grid.innerHTML=list.map(function(d){return '<a class="comm-card" href="'+d.url+'" target="_blank" rel="noopener"><span class="comm-ico">📥</span><span class="comm-txt"><b>'+esc(d.name)+'</b><i>'+tkFmtSize(d.size)+'</i></span><span class="comm-arrow">↓</span></a>';}).join('');}
+  if(sec)sec.hidden=list.length===0;
+  var adm=document.getElementById('dlList');
+  if(adm){adm.innerHTML=list.map(function(d,i){return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px"><span style="font-size:13.5px">'+esc(d.name)+' <span style="color:var(--faint)">('+tkFmtSize(d.size)+')</span></span><button class="btn btn-danger" onclick="tkDelDl('+i+')">✕</button></div>';}).join('');}
+}
+function tkSaveDl(msg){tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},null);var m=document.getElementById('dlMsg');if(m&&msg)m.textContent=msg;tkRenderDl();}
+function tkDelDl(i){var list=tkDlList();list.splice(i,1);tkSettings.downloads=list;tkSaveDl('✓ Download removed.');}
+function tkUploadDl(){
+  var f=document.getElementById('dlFile').files[0];var name=(document.getElementById('dlName').value||'').trim();
+  var m=document.getElementById('dlMsg');
+  if(!f){if(m)m.textContent='⚠ Choose a file first.';return}
+  if(!name)name=f.name;
+  if(f.size>3.5*1024*1024){if(m)m.textContent='⚠ File too large — max ~3.5 MB.';return}
+  var key=null;try{key=sessionStorage.getItem('tk_admin_key');}catch(e){}
+  if(!key){key=prompt('Enter admin key:');if(!key)return;try{sessionStorage.setItem('tk_admin_key',key);}catch(e){}}
+  if(m)m.textContent='⏳ Uploading…';
+  var rd=new FileReader();
+  rd.onload=function(){
+    var b64=String(rd.result).split(',')[1]||'';
+    fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify({filename:f.name,data:b64})})
+    .then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});})
+    .then(function(x){
+      if(!x.ok){if(m)m.textContent='⚠ '+(x.d&&x.d.error?x.d.error:'Upload failed.');return}
+      var list=tkDlList();list.push({name:name,url:x.d.url,size:x.d.size});tkSettings.downloads=list;tkSaveDl('✓ Uploaded — now live in Downloads for everyone.');
+    }).catch(function(){if(m)m.textContent='⚠ Network error — try again.';});
+  };
+  rd.readAsDataURL(f);
+}
+window.addEventListener('load',function(){setTimeout(tkRenderDl,600);});
 </script>
 </body>
 </html>
