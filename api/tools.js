@@ -29,6 +29,7 @@ module.exports = async (req, res) => {
       name: String(t.name || '').slice(0, 60),
       cat: String(t.cat || 'Custom').slice(0, 30),
       desc: String(t.desc || '').slice(0, 200),
+      img: /^https?:\/\//i.test(String(t.img || '')) ? String(t.img).slice(0, 500) : '',
       custom: true
     })).filter(t => t.name && t.desc);
     let settings = current.settings || {};

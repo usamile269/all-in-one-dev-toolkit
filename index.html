@@ -336,6 +336,15 @@ img,canvas,svg,video{max-width:100%}
 .type-line b{color:var(--ink);font-weight:700}
 .type-caret{display:inline-block;margin-left:2px;color:var(--ink);animation:caretBlink 1s steps(1) infinite}
 @keyframes caretBlink{50%{opacity:0}}
+
+.tool-pic{overflow:hidden;padding:0}
+.tool-pic img{width:100%;height:100%;object-fit:cover;display:block}
+.tool-card{border-radius:20px;padding:24px;gap:14px}
+.tool-card:hover{transform:translateY(-4px);border-color:var(--line-2);box-shadow:var(--shadow-lg)}
+.tool-card h3{font-size:19px;letter-spacing:-.01em}
+.tool-desc{font-size:14.5px;line-height:1.6}
+.tool-card .tool-pic{width:56px;height:56px;flex-basis:56px;border-radius:15px}
+.card-actions .open-btn{flex:1}
 </style>
 </head>
 <body>
@@ -401,7 +410,7 @@ img,canvas,svg,video{max-width:100%}
         <div>
           <h3 style="font-size:18px;font-weight:700;margin:0 0 12px">➕ Add New Tool</h3>
           <div class="field"><label for="newName">Tool Name *</label><input type="text" id="newName" placeholder="e.g. My Regex Tester"></div>
-          <div class="field"><label for="newIcon">Icon / Emoji (Picture)</label><input type="text" id="newIcon" placeholder="🛠️" maxlength="4" value="🛠️"></div>
+          <div class="field"><label for="newImg">Tool Picture — Image Link (optional)</label><input type="text" id="newImg" placeholder="https://example.com/pic.png"></div><div class="field"><label for="newImgFile">…or Upload Picture (optional)</label><input type="file" id="newImgFile" accept="image/*" style="width:100%"></div><div class="field"><label for="newIcon">Icon / Emoji (only if no picture)</label><input type="text" id="newIcon" placeholder="🛠️" maxlength="4" value="🛠️"></div>
           <div class="field"><label for="newCat">Category</label>
             <select id="newCat"><option>Text</option><option>Encoding</option><option>Generators</option><option>Media</option><option>Color</option><option>Dev</option><option>AI</option><option selected>Custom</option></select>
           </div>
@@ -687,6 +696,7 @@ img,canvas,svg,video{max-width:100%}
 
 
 
+
       <!-- CUSTOM GENERIC -->
       <div class="panel" id="panel-custom">
         <div class="admin-note" style="border-radius:10px;padding:12px;font-size:14px;line-height:1.6">⭐ This tool was added from the <b>Admin Panel</b>. Its workspace is ready — write your text / notes below, transform it and copy it.</div>
@@ -777,7 +787,7 @@ function renderGrid(){
     var fav=favorites.has(t.id);var glyph=t.custom?t.emoji:(GLYPHS[t.id]||t.emoji);var darkTile=isDarkTile(t);
     card.innerHTML=
       '<button class="del-btn" title="Remove tool" aria-label="Remove '+esc(t.name)+'">✕</button>'+
-      '<div class="tool-top"><div class="tool-pic '+(darkTile?'tile-dark':'tile-light')+'" style="background:'+tileGrad(t)+'">'+esc(glyph)+'</div><div><div class="cat">'+esc(t.cat)+(t.custom?' • Custom':'')+'</div><h3>'+esc(t.name)+'</h3></div></div>'+
+      '<div class="tool-top"><div class="tool-pic '+(darkTile?'tile-dark':'tile-light')+'" style="background:'+tileGrad(t)+'">'+(t.img?'<img src="'+esc(t.img)+'" alt="" loading="lazy">':esc(glyph))+'</div><div><div class="cat">'+esc(t.cat)+(t.custom?' • Custom':'')+'</div><h3>'+esc(t.name)+'</h3></div></div>'+
       '<p class="tool-desc">'+esc(t.desc)+'</p>'+
       '<div class="card-actions"><button class="btn btn-dark open-btn">Open Tool →</button>'+
       '<button class="fav-btn'+(fav?' active':'')+'" title="Favorite" aria-label="Toggle favorite">★</button></div>';
@@ -801,7 +811,7 @@ document.getElementById('searchInput').addEventListener('input',renderGrid);
 function openTool(id){
   var t=tools.find(function(x){return x.id===id});if(!t)return;
   activeTool=t;
-  var wsIcon=document.getElementById('wsIcon');wsIcon.textContent=t.custom?t.emoji:(GLYPHS[t.id]||t.emoji);wsIcon.style.background=tileGrad(t);wsIcon.classList.toggle('tile-dark',isDarkTile(t));wsIcon.classList.toggle('tile-light',!isDarkTile(t));
+  var wsIcon=document.getElementById('wsIcon');if(t.img){wsIcon.innerHTML='<img src="'+esc(t.img)+'" alt="">';}else{wsIcon.textContent=t.custom?t.emoji:(GLYPHS[t.id]||t.emoji);}wsIcon.style.background=tileGrad(t);wsIcon.classList.toggle('tile-dark',isDarkTile(t));wsIcon.classList.toggle('tile-light',!isDarkTile(t));
   document.getElementById('wsCat').textContent=t.cat+' TOOL';
   document.getElementById('wsTitle').textContent=t.name;
   document.getElementById('wsDesc').textContent=t.desc;
@@ -1037,6 +1047,8 @@ function tkSaveSettings(){
   tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
   var _mt=document.getElementById('mntToggle'),_mm=document.getElementById('mntMsg'),_ga=document.getElementById('gaId');
   tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
+  var _mt=document.getElementById('mntToggle'),_mm=document.getElementById('mntMsg'),_ga=document.getElementById('gaId');
+  tkSettings.maintenance=_mt?_mt.checked:false;tkSettings.maintMsg=_mm?_mm.value.trim():'';tkSettings.gaId=_ga?_ga.value.trim():'';
   tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},null);
   var m=document.getElementById('bgMsg');if(m){m.textContent='✓ Options saved — all visitors will see this background.';m.className='msg ok';}
   tkApplyBg();
@@ -1045,6 +1057,7 @@ var tkAnimId=null;
 function tkStopBg(){var c=document.getElementById('bgCanvas'),v=document.getElementById('bgVideo');if(c)c.hidden=true;if(v){v.hidden=true;v.pause();}if(tkAnimId){cancelAnimationFrame(tkAnimId);tkAnimId=null;}}
 function tkStartAnim(){
   var c=document.getElementById('bgCanvas');if(!c)return;c.hidden=false;
+  var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
   var tkLight=document.documentElement.getAttribute('data-theme')==='light';
@@ -1224,6 +1237,53 @@ window.addEventListener('load',function(){setTimeout(tkRenderDl,600);});
   tick();
 })();
 
+
+</script>
+
+<script>
+/* tkPicTool */
+window.addEventListener('load',function(){
+  var prev=window.addCustomTool;
+  window.addCustomTool=function(){
+    var urlEl=document.getElementById('newImg'),fileEl=document.getElementById('newImgFile');
+    var url=urlEl?urlEl.value.trim():'';
+    var file=fileEl&&fileEl.files?fileEl.files[0]:null;
+    if(!url&&!file){prev();return;}
+    var name=document.getElementById('newName').value.trim();
+    var desc=document.getElementById('newDesc').value.trim();
+    var msg=document.getElementById('adminMsg');
+    if(!name||!desc){msg.textContent='⚠ Tool Name and Description are both required.';msg.className='msg err';return;}
+    function finish(imgUrl){
+      var icon=document.getElementById('newIcon').value.trim()||'🛠️';
+      var cat=document.getElementById('newCat').value;
+      tools.push({id:'custom-'+Date.now(),emoji:icon,name:name,cat:cat,desc:desc,custom:true,img:imgUrl||''});
+      msg.textContent='✓ "'+name+'" added with picture! Its card is now in the grid.';msg.className='msg ok';
+      document.getElementById('newName').value='';document.getElementById('newDesc').value='';
+      if(urlEl)urlEl.value='';if(fileEl)fileEl.value='';
+      renderGrid();toast('➕ New tool added: '+name);
+      if(typeof tkSync==='function')tkSync();
+    }
+    if(!file){
+      if(!/^https?:\/\//i.test(url)){msg.textContent='⚠ Picture link must start with http:// or https://';msg.className='msg err';return;}
+      finish(url);return;
+    }
+    if(file.size>3.5*1024*1024){msg.textContent='⚠ Picture too large — max ~3.5 MB.';msg.className='msg err';return;}
+    var key=null;try{key=sessionStorage.getItem('tk_admin_key');}catch(e){}
+    if(!key){key=prompt('Enter admin key:');if(!key)return;try{sessionStorage.setItem('tk_admin_key',key);}catch(e){}}
+    msg.textContent='⏳ Uploading picture…';msg.className='msg';
+    var rd=new FileReader();
+    rd.onload=function(){
+      var b64=String(rd.result).split(',')[1]||'';
+      fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify({filename:file.name,data:b64})})
+      .then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});})
+      .then(function(x){
+        if(!x.ok){msg.textContent='⚠ '+(x.d&&x.d.error?x.d.error:'Upload failed.');msg.className='msg err';return;}
+        finish(x.d.url);
+      }).catch(function(){msg.textContent='⚠ Network error — try again.';msg.className='msg err';});
+    };
+    rd.readAsDataURL(file);
+  };
+});
 </script>
 </body>
 </html>
