@@ -10,10 +10,14 @@ async function readData() {
     const { blobs } = await list({ prefix: PREFIX });
     if (blobs && blobs.length) {
       const sorted = blobs.slice().sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
-      const r = await fetch(sorted[0].url, { cache: 'no-store' });
-      if (r.ok) {
-        const d = await r.json();
-        return { tools: Array.isArray(d.tools) ? d.tools : [], settings: (d.settings && typeof d.settings === 'object') ? d.settings : {} };
+      for (const b of sorted.slice(0, 3)) {
+        try {
+          const r = await fetch(b.url, { cache: 'no-store' });
+          if (r.ok) {
+            const d = await r.json();
+            return { tools: Array.isArray(d.tools) ? d.tools : [], settings: (d.settings && typeof d.settings === 'object') ? d.settings : {} };
+          }
+        } catch (e) {}
       }
     }
     // legacy fallback: original single-file store
@@ -67,7 +71,7 @@ module.exports = async (req, res) => {
         })).filter(d => d.name && d.url) : (Array.isArray(settings.downloads) ? settings.downloads : [])
       });
     }
-    await put(PREFIX + Date.now() + '.json', JSON.stringify({ tools: clean, settings }), { access: 'public', addRandomSuffix: false, contentType: 'application/json' });
+    await put(PREFIX + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.json', JSON.stringify({ tools: clean, settings }), { access: 'public', addRandomSuffix: false, contentType: 'application/json' });
     // prune old versions, keep the newest 3
     try {
       const { blobs } = await list({ prefix: PREFIX });

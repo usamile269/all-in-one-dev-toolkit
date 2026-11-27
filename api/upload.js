@@ -1,6 +1,6 @@
 // Download file upload — admin only, stores file in Vercel Blob, returns public URL
 const { put } = require('@vercel/blob');
-const TYPES = { pdf: 'application/pdf', zip: 'application/zip', txt: 'text/plain', apk: 'application/vnd.android.package-archive', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', mp4: 'video/mp4', json: 'application/json', md: 'text/markdown' };
+const TYPES = { pdf: 'application/pdf', zip: 'application/zip', rar: 'application/vnd.rar', txt: 'text/plain', apk: 'application/vnd.android.package-archive', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif', avif: 'image/avif', bmp: 'image/bmp', svg: 'image/svg+xml', mp4: 'video/mp4', mp3: 'audio/mpeg', wav: 'audio/wav', m4a: 'audio/mp4', ogg: 'audio/ogg', json: 'application/json', md: 'text/markdown' };
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });

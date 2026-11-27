@@ -782,7 +782,7 @@ function renderGrid(){
     if(favOnly&&!favorites.has(t.id))return;
     if(q&&!(t.name.toLowerCase().includes(q)||t.desc.toLowerCase().includes(q)||t.cat.toLowerCase().includes(q)))return;
     shown++;
-    var card=document.createElement('article');card.className='tool-card';
+    var card=document.createElement('article');card.className='tool-card';card.dataset.tid=t.id;
     card.style.setProperty('--tile',tileGrad(t));
     card.style.animationDelay=Math.min(shown*55,440)+'ms';
     var fav=favorites.has(t.id);var glyph=t.custom?t.emoji:(GLYPHS[t.id]||t.emoji);var darkTile=isDarkTile(t);
@@ -1142,8 +1142,10 @@ function tkDragInit(){
   if(!document.body.classList.contains('admin-mode'))return;
   var grid=document.getElementById('toolGrid');if(!grid)return;
   grid.querySelectorAll('.tool-card').forEach(function(card){
-    var m=card.innerHTML.match(/openTool\('([^']+)'\)/);if(!m)return;
-    card.dataset.tid=m[1];card.draggable=true;card.style.cursor='grab';
+    var tid=card.dataset.tid;
+    if(!tid){var m=card.innerHTML.match(/openTool\('([^']+)'\)/);if(m)tid=m[1];}
+    if(!tid)return;
+    card.dataset.tid=tid;card.draggable=true;card.style.cursor='grab';
     card.addEventListener('dragstart',function(e){e.dataTransfer.setData('text/plain',card.dataset.tid);card.style.opacity='.4';});
     card.addEventListener('dragend',function(){card.style.opacity='';});
     card.addEventListener('dragover',function(e){e.preventDefault();});
@@ -1190,26 +1192,42 @@ function tkRenderDl(){
 }
 function tkSaveDl(msg){tkPost({tools:tools.filter(function(t){return t.custom}),settings:tkSettings},null);var m=document.getElementById('dlMsg');if(m&&msg)m.textContent=msg;tkRenderDl();}
 function tkDelDl(i){var list=tkDlList();list.splice(i,1);tkSettings.downloads=list;tkSaveDl('✓ Download removed.');}
+function tkReadB64(file,cb){
+  var CH=1024*1024,pos=0,parts=[];
+  function enc(buf){var bytes=new Uint8Array(buf),bin='',i;for(i=0;i<bytes.length;i+=32768){bin+=String.fromCharCode.apply(null,bytes.subarray(i,Math.min(i+32768,bytes.length)));}return btoa(bin);}
+  function step(){
+    if(pos>=file.size){cb(null,parts.join(''));return;}
+    var rd=new FileReader();
+    rd.onload=function(){var part;try{part=enc(rd.result);}catch(e){cb(e);return;}parts.push(part);pos+=CH;step();};
+    rd.onerror=function(){cb(rd.error||new Error('read failed'));};
+    try{rd.readAsArrayBuffer(file.slice(pos,pos+CH));}catch(e){cb(e);}
+  }
+  step();
+}
+function tkFetchUpload(fname,b64,key,cb){
+  var ctl=('AbortController' in window)?new AbortController():null;var timedOut=false;
+  var timer=ctl?setTimeout(function(){timedOut=true;ctl.abort();},120000):null;
+  fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify({filename:fname,data:b64}),signal:ctl?ctl.signal:undefined})
+  .then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});})
+  .then(function(x){if(timer)clearTimeout(timer);cb(x);})
+  .catch(function(){if(timer)clearTimeout(timer);cb({ok:false,error:timedOut?'timeout':'network'});});
+}
 function tkUploadDl(){
   var f=document.getElementById('dlFile').files[0];var name=(document.getElementById('dlName').value||'').trim();
   var m=document.getElementById('dlMsg');
-  if(!f){if(m)m.textContent='⚠ Choose a file first.';return}
+  if(!f){if(m)m.textContent='\u26a0 Choose a file first.';return}
   if(!name)name=f.name;
-  if(f.size>3.5*1024*1024){if(m)m.textContent='⚠ File too large — max ~3.5 MB.';return}
+  if(f.size>3.5*1024*1024){if(m)m.textContent='\u26a0 File too large \u2014 max ~3.5 MB.';return}
   var key=null;try{key=sessionStorage.getItem('tk_admin_key');}catch(e){}
   if(!key){key=prompt('Enter admin key:');if(!key)return;try{sessionStorage.setItem('tk_admin_key',key);}catch(e){}}
-  if(m)m.textContent='⏳ Uploading…';
-  var rd=new FileReader();
-  rd.onload=function(){
-    var b64=String(rd.result).split(',')[1]||'';
-    fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify({filename:f.name,data:b64})})
-    .then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});})
-    .then(function(x){
-      if(!x.ok){if(m)m.textContent='⚠ '+(x.d&&x.d.error?x.d.error:'Upload failed.');return}
-      var list=tkDlList();list.push({name:name,url:x.d.url,size:x.d.size});tkSettings.downloads=list;tkSaveDl('✓ Uploaded — now live in Downloads for everyone.');
-    }).catch(function(){if(m)m.textContent='⚠ Network error — try again.';});
-  };
-  rd.readAsDataURL(f);
+  if(m)m.textContent='\u23f3 Uploading\u2026';
+  tkReadB64(f,function(err,b64){
+    if(err){if(m)m.textContent='\u26a0 File parhi nahi gayi \u2014 dobara choose karo.';return}
+    tkFetchUpload(f.name,b64,key,function(x){
+      if(!x.ok){if(m)m.textContent='\u26a0 '+(x.error==='timeout'?'Upload time-out \u2014 net slow hai, dobara try karo.':(x.d&&x.d.error?x.d.error:'Upload failed.'));return}
+      var list=tkDlList();list.push({name:name,url:x.d.url,size:x.d.size});tkSettings.downloads=list;tkSaveDl('\u2713 Uploaded \u2014 now live in Downloads for everyone.');
+    });
+  });
 }
 window.addEventListener('load',function(){setTimeout(tkRenderDl,600);});
 
@@ -1276,6 +1294,9 @@ window.addEventListener('load',function(){
     var key=null;try{key=sessionStorage.getItem('tk_admin_key');}catch(e){}
     if(!key){key=prompt('Enter admin key:');if(!key)return;try{sessionStorage.setItem('tk_admin_key',key);}catch(e){}}
     msg.textContent='\u23f3 Picture tayyar ho rahi hai\u2026';msg.className='msg';
+    function failRead(){
+      msg.textContent='\u26a0 Picture parhi nahi gayi \u2014 file boht bari ya format ajeeb hai. Is photo ka screenshot le kar wo upload karo, wo pakka chalega.';msg.className='msg err';
+    }
     function sendUp(fname,b64){
       msg.textContent='\u23f3 Uploading picture\u2026';msg.className='msg';
       var ctl=('AbortController' in window)?new AbortController():null;
@@ -1293,29 +1314,36 @@ window.addEventListener('load',function(){
       });
     }
     function rawSend(){
-      var rd=new FileReader();
-      rd.onload=function(){sendUp(file.name,String(rd.result).split(',')[1]||'');};
-      rd.onerror=function(){msg.textContent='\u26a0 Picture parhi nahi gayi \u2014 dobara try karo.';msg.className='msg err';};
-      rd.readAsDataURL(file);
+      if(typeof tkReadB64==='function'){tkReadB64(file,function(err,b64){if(err){failRead();return;}sendUp(file.name,b64);});}
+      else{failRead();}
     }
+    var isHeic=/\.hei[cf]$/i.test(file.name||'')||/hei[cf]/i.test(file.type||'');
     if(file.size<=700*1024){rawSend();}
     else{
       var img=new Image();
-      var objUrl=URL.createObjectURL(file);
-      img.onload=function(){
-        try{
-          var max=1280,w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
-          var sc=Math.min(1,max/Math.max(w,h));
-          var cw=Math.max(1,Math.round(w*sc)),ch=Math.max(1,Math.round(h*sc));
-          var cv=document.createElement('canvas');cv.width=cw;cv.height=ch;
-          cv.getContext('2d').drawImage(img,0,0,cw,ch);
+      var objUrl=null;
+      try{objUrl=URL.createObjectURL(file);}catch(e){objUrl=null;}
+      if(!objUrl){rawSend();}
+      else{
+        img.onload=function(){
+          try{
+            var max=1280,w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+            var sc=Math.min(1,max/Math.max(w,h));
+            var cw=Math.max(1,Math.round(w*sc)),ch=Math.max(1,Math.round(h*sc));
+            var cv=document.createElement('canvas');cv.width=cw;cv.height=ch;
+            cv.getContext('2d').drawImage(img,0,0,cw,ch);
+            URL.revokeObjectURL(objUrl);
+            var durl=cv.toDataURL('image/jpeg',0.85);
+            sendUp((file.name.replace(/\.[^.]+$/,'')||'picture')+'.jpg',durl.split(',')[1]||'');
+          }catch(e){rawSend();}
+        };
+        img.onerror=function(){
           URL.revokeObjectURL(objUrl);
-          var durl=cv.toDataURL('image/jpeg',0.85);
-          sendUp((file.name.replace(/\.[^.]+$/,'')||'picture')+'.jpg',durl.split(',')[1]||'');
-        }catch(e){rawSend();}
-      };
-      img.onerror=function(){URL.revokeObjectURL(objUrl);rawSend();};
-      img.src=objUrl;
+          if(isHeic){msg.textContent='\u26a0 Ye HEIC format photo hai \u2014 browser ise nahi parh sakta. Camera settings mein "High efficiency" band karke JPG photo use karo, ya is ka screenshot le kar upload karo.';msg.className='msg err';return;}
+          rawSend();
+        };
+        img.src=objUrl;
+      }
     }
   };
 });
