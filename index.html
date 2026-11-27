@@ -411,6 +411,7 @@ img,canvas,svg,video{max-width:100%}
           <h3 style="font-size:18px;font-weight:700;margin:0 0 12px">➕ Add New Tool</h3>
           <div class="field"><label for="newName">Tool Name *</label><input type="text" id="newName" placeholder="e.g. My Regex Tester"></div>
           <div class="field"><label for="newImg">Tool Picture — Image Link (optional)</label><input type="text" id="newImg" placeholder="https://example.com/pic.png"></div><div class="field"><label for="newImgFile">…or Upload Picture (optional)</label><input type="file" id="newImgFile" accept="image/*" style="width:100%"></div><div class="field"><label for="newIcon">Icon / Emoji (only if no picture)</label><input type="text" id="newIcon" placeholder="🛠️" maxlength="4" value="🛠️"></div>
+          <div class="field"><label for="newUrl">Tool Link (optional) — Open dabane par visitor is link par jayega</label><input type="text" id="newUrl" placeholder="https://example.com — CapCut Pro, Twitter, koi bhi link"></div>
           <div class="field"><label for="newCat">Category</label>
             <select id="newCat"><option>Text</option><option>Encoding</option><option>Generators</option><option>Media</option><option>Color</option><option>Dev</option><option>AI</option><option selected>Custom</option></select>
           </div>
@@ -789,7 +790,7 @@ function renderGrid(){
       '<button class="del-btn" title="Remove tool" aria-label="Remove '+esc(t.name)+'">✕</button>'+
       '<div class="tool-top"><div class="tool-pic '+(darkTile?'tile-dark':'tile-light')+'" style="background:'+tileGrad(t)+'">'+(t.img?'<img src="'+esc(t.img)+'" alt="" loading="lazy">':esc(glyph))+'</div><div><div class="cat">'+esc(t.cat)+(t.custom?' • Custom':'')+'</div><h3>'+esc(t.name)+'</h3></div></div>'+
       '<p class="tool-desc">'+esc(t.desc)+'</p>'+
-      '<div class="card-actions"><button class="btn btn-dark open-btn">Open Tool →</button>'+
+      '<div class="card-actions"><button class="btn btn-dark open-btn">'+((t.custom&&t.url)?'Open Link ↗':'Open Tool →')+'</button>'+
       '<button class="fav-btn'+(fav?' active':'')+'" title="Favorite" aria-label="Toggle favorite">★</button></div>';
     card.querySelector('.del-btn').addEventListener('click',function(e){e.stopPropagation();removeTool(t.id)});
     card.querySelector('.open-btn').addEventListener('click',function(){openTool(t.id)});
@@ -810,6 +811,7 @@ document.getElementById('searchInput').addEventListener('input',renderGrid);
 
 function openTool(id){
   var t=tools.find(function(x){return x.id===id});if(!t)return;
+  if(t.custom&&t.url){window.open(t.url,'_blank','noopener');return;}
   activeTool=t;
   var wsIcon=document.getElementById('wsIcon');if(t.img){wsIcon.innerHTML='<img src="'+esc(t.img)+'" alt="">';}else{wsIcon.textContent=t.custom?t.emoji:(GLYPHS[t.id]||t.emoji);}wsIcon.style.background=tileGrad(t);wsIcon.classList.toggle('tile-dark',isDarkTile(t));wsIcon.classList.toggle('tile-light',!isDarkTile(t));
   document.getElementById('wsCat').textContent=t.cat+' TOOL';
@@ -845,12 +847,14 @@ function addCustomTool(){
   var desc=document.getElementById('newDesc').value.trim();
   var icon=document.getElementById('newIcon').value.trim()||'🛠️';
   var cat=document.getElementById('newCat').value;
+  var linkEl=document.getElementById('newUrl');var linkUrl=linkEl?linkEl.value.trim():'';
+  if(linkUrl&&!/^https?:\/\//i.test(linkUrl))linkUrl='https://'+linkUrl;
   var msg=document.getElementById('adminMsg');
   if(!name||!desc){msg.textContent='⚠ Tool Name and Description are both required.';msg.className='msg err';return}
   var id='custom-'+Date.now();
-  tools.push({id:id,emoji:icon,name:name,cat:cat,desc:desc,custom:true});
+  tools.push({id:id,emoji:icon,name:name,cat:cat,desc:desc,custom:true,url:linkUrl});
   msg.textContent='✓ "'+name+'" added! Its card is now in the grid.';msg.className='msg ok';
-  document.getElementById('newName').value='';document.getElementById('newDesc').value='';
+  document.getElementById('newName').value='';document.getElementById('newDesc').value='';if(linkEl)linkEl.value='';
   renderGrid();toast('➕ New tool added: '+name);
 }
 function removeTool(id){
@@ -1256,10 +1260,12 @@ window.addEventListener('load',function(){
     function finish(imgUrl){
       var icon=document.getElementById('newIcon').value.trim()||'🛠️';
       var cat=document.getElementById('newCat').value;
-      tools.push({id:'custom-'+Date.now(),emoji:icon,name:name,cat:cat,desc:desc,custom:true,img:imgUrl||''});
+      var linkEl=document.getElementById('newUrl');var linkUrl=linkEl?linkEl.value.trim():'';
+      if(linkUrl&&!/^https?:\/\//i.test(linkUrl))linkUrl='https://'+linkUrl;
+      tools.push({id:'custom-'+Date.now(),emoji:icon,name:name,cat:cat,desc:desc,custom:true,img:imgUrl||'',url:linkUrl});
       msg.textContent='✓ "'+name+'" added with picture! Its card is now in the grid.';msg.className='msg ok';
       document.getElementById('newName').value='';document.getElementById('newDesc').value='';
-      if(urlEl)urlEl.value='';if(fileEl)fileEl.value='';
+      if(urlEl)urlEl.value='';if(fileEl)fileEl.value='';if(linkEl)linkEl.value='';
       renderGrid();toast('➕ New tool added: '+name);
       if(typeof tkSync==='function')tkSync();
     }
