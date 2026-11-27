@@ -4,7 +4,8 @@ async function readData() {
   try {
     const { blobs } = await list({ prefix: 'tools.json' });
     if (!blobs || !blobs.length) return { tools: [], settings: {} };
-    const r = await fetch(blobs[0].url);
+    const sorted = blobs.slice().sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+    const r = await fetch(sorted[0].url + '?v=' + Date.now(), { cache: 'no-store' });
     if (!r.ok) return { tools: [], settings: {} };
     const d = await r.json();
     return { tools: Array.isArray(d.tools) ? d.tools : [], settings: (d.settings && typeof d.settings === 'object') ? d.settings : {} };
@@ -34,10 +35,19 @@ module.exports = async (req, res) => {
     })).filter(t => t.name && t.desc);
     let settings = current.settings || {};
     if (body && body.settings && typeof body.settings === 'object') {
-      settings = {
-        bgType: ['none', 'anim', 'video'].includes(body.settings.bgType) ? body.settings.bgType : 'none',
-        bgUrl: String(body.settings.bgUrl || '').slice(0, 500)
-      };
+      const bs = body.settings;
+      settings = Object.assign({}, settings, {
+        bgType: ['none', 'anim', 'video'].includes(bs.bgType) ? bs.bgType : (settings.bgType || 'none'),
+        bgUrl: String(bs.bgUrl != null ? bs.bgUrl : (settings.bgUrl || '')).slice(0, 500),
+        maintenance: bs.maintenance != null ? !!bs.maintenance : !!settings.maintenance,
+        maintMsg: String(bs.maintMsg != null ? bs.maintMsg : (settings.maintMsg || '')).slice(0, 300),
+        gaId: String(bs.gaId != null ? bs.gaId : (settings.gaId || '')).slice(0, 40),
+        downloads: Array.isArray(bs.downloads) ? bs.downloads.slice(0, 50).map(d => ({
+          name: String(d.name || '').slice(0, 80),
+          url: /^https?:\/\//i.test(String(d.url || '')) ? String(d.url).slice(0, 500) : '',
+          size: Number(d.size) || 0
+        })).filter(d => d.name && d.url) : (Array.isArray(settings.downloads) ? settings.downloads : [])
+      });
     }
     await put('tools.json', JSON.stringify({ tools: clean, settings }), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json' });
     return res.status(200).json({ ok: true, count: clean.length, settings });
