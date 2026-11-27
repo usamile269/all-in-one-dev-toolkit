@@ -1,27 +1,37 @@
-const { put, list } = require('@vercel/blob');
+const { put, list, del } = require('@vercel/blob');
+
+// Versioned storage: every save writes a NEW file (data/v<ts>.json) and reads
+// pick the newest by uploadedAt. (Overwriting one fixed URL left the public
+// CDN cache serving stale content to the function's own fetch.)
+const PREFIX = 'data/v';
 
 async function readData() {
   try {
-    const { blobs } = await list({ prefix: 'tools.json' });
-    if (!blobs || !blobs.length) return { tools: [], settings: {} };
-    const sorted = blobs.slice().sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
-    const r = await fetch(sorted[0].url + '?v=' + Date.now(), { cache: 'no-store' });
-    if (!r.ok) return { tools: [], settings: {} };
-    const d = await r.json();
-    return { tools: Array.isArray(d.tools) ? d.tools : [], settings: (d.settings && typeof d.settings === 'object') ? d.settings : {} };
+    const { blobs } = await list({ prefix: PREFIX });
+    if (blobs && blobs.length) {
+      const sorted = blobs.slice().sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+      const r = await fetch(sorted[0].url, { cache: 'no-store' });
+      if (r.ok) {
+        const d = await r.json();
+        return { tools: Array.isArray(d.tools) ? d.tools : [], settings: (d.settings && typeof d.settings === 'object') ? d.settings : {} };
+      }
+    }
+    // legacy fallback: original single-file store
+    const old = await list({ prefix: 'tools.json' });
+    if (old.blobs && old.blobs.length) {
+      const r = await fetch(old.blobs[0].url + '?v=' + Date.now(), { cache: 'no-store' });
+      if (r.ok) {
+        const d = await r.json();
+        return { tools: Array.isArray(d.tools) ? d.tools : [], settings: (d.settings && typeof d.settings === 'object') ? d.settings : {} };
+      }
+    }
+    return { tools: [], settings: {} };
   } catch (e) { return { tools: [], settings: {} }; }
 }
 
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method === 'GET') {
-    if (req.query && req.query.debug === '1' && req.headers['x-admin-key'] === process.env.ADMIN_KEY) {
-      const { blobs } = await list({ prefix: 'tools.json' });
-      const sorted = (blobs || []).slice().sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
-      let fetched = '';
-      try { const fr = await fetch(sorted[0].url + '?v=' + Date.now(), { cache: 'no-store' }); fetched = (await fr.text()).slice(0, 200); } catch (e) { fetched = 'ERR ' + e.message; }
-      return res.status(200).json({ blobs: (blobs || []).map(b => ({ pathname: b.pathname, uploadedAt: b.uploadedAt, size: b.size, url: b.url })), fetched });
-    }
     return res.status(200).json(await readData());
   }
   if (req.method === 'POST') {
@@ -56,7 +66,16 @@ module.exports = async (req, res) => {
         })).filter(d => d.name && d.url) : (Array.isArray(settings.downloads) ? settings.downloads : [])
       });
     }
-    await put('tools.json', JSON.stringify({ tools: clean, settings }), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json' });
+    await put(PREFIX + Date.now() + '.json', JSON.stringify({ tools: clean, settings }), { access: 'public', addRandomSuffix: false, contentType: 'application/json' });
+    // prune old versions, keep the newest 3
+    try {
+      const { blobs } = await list({ prefix: PREFIX });
+      if (blobs && blobs.length > 3) {
+        const sorted = blobs.slice().sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+        const stale = sorted.slice(3).map(b => b.url);
+        if (stale.length) await del(stale);
+      }
+    } catch (e) {}
     return res.status(200).json({ ok: true, count: clean.length, settings });
   }
   return res.status(405).json({ error: 'Method not allowed' });
