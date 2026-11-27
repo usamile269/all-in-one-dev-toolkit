@@ -158,6 +158,9 @@ a{color:inherit}
 .fav-btn.active{background:var(--white);color:#0c0c0d;border-color:var(--white)}
 .del-btn{display:none;position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:999px;border:0;background:var(--white);color:#0c0c0d;font-weight:700;cursor:pointer;font-size:15px;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.5);z-index:2}
 body.admin-mode .del-btn{display:flex;align-items:center;justify-content:center}
+.edit-btn{display:none;position:absolute;top:12px;right:52px;width:32px;height:32px;border-radius:999px;border:0;background:var(--white);color:#0c0c0d;font-weight:700;cursor:pointer;font-size:14px;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.5);z-index:2}
+body.admin-mode .edit-btn{display:flex;align-items:center;justify-content:center}
+.card-actions a.open-btn{text-decoration:none;display:flex;align-items:center;justify-content:center;flex:1}
 body.admin-mode .tool-card{border:1px dashed rgba(255,255,255,.4)}
 .custom-badge{font-size:11px;font-weight:700;background:var(--glass-2);color:var(--ink);padding:4px 8px;border-radius:999px}
 .empty{display:none;background:var(--glass);border:1.5px dashed var(--line-2);border-radius:18px;padding:34px;text-align:center;color:var(--muted);font-weight:400}
@@ -408,15 +411,16 @@ img,canvas,svg,video{max-width:100%}
       </div>
       <div class="admin-grid">
         <div>
-          <h3 style="font-size:18px;font-weight:700;margin:0 0 12px">➕ Add New Tool</h3>
+          <h3 id="addFormTitle" style="font-size:18px;font-weight:700;margin:0 0 12px">➕ Add New Tool</h3>
           <div class="field"><label for="newName">Tool Name *</label><input type="text" id="newName" placeholder="e.g. My Regex Tester"></div>
-          <div class="field"><label for="newImg">Tool Picture — Image Link (optional)</label><input type="text" id="newImg" placeholder="https://example.com/pic.png"></div><div class="field"><label for="newImgFile">…or Upload Picture (optional)</label><input type="file" id="newImgFile" accept="image/*" style="width:100%"></div><div class="field"><label for="newIcon">Icon / Emoji (only if no picture)</label><input type="text" id="newIcon" placeholder="🛠️" maxlength="4" value="🛠️"></div>
+          <div class="field"><label for="newImg">Tool Picture — JPG/PNG Link (optional)</label><input type="text" id="newImg" placeholder="https://example.com/pic.jpg"></div><div class="field"><label for="newIcon">Icon / Emoji (only if no picture)</label><input type="text" id="newIcon" placeholder="🛠️" maxlength="4" value="🛠️"></div>
           <div class="field"><label for="newUrl">Tool Link (optional) — Open dabane par visitor is link par jayega</label><input type="text" id="newUrl" placeholder="https://example.com — CapCut Pro, Twitter, koi bhi link"></div>
           <div class="field"><label for="newCat">Category</label>
             <select id="newCat"><option>Text</option><option>Encoding</option><option>Generators</option><option>Media</option><option>Color</option><option>Dev</option><option>AI</option><option selected>Custom</option></select>
           </div>
           <div class="field"><label for="newDesc">Description *</label><textarea id="newDesc" placeholder="What does this tool do — write a short description shown on the card…"></textarea></div>
-          <button class="btn btn-dark" style="width:100%" onclick="addCustomTool()">➕ Add Tool to Toolkit</button>
+          <button class="btn btn-dark" id="addToolBtn" style="width:100%" onclick="addCustomTool()">➕ Add Tool to Toolkit</button>
+          <button class="btn" id="editCancelBtn" style="width:100%;margin-top:8px;display:none" onclick="tkCancelEdit()">✖ Cancel Edit</button>
           <div class="msg" id="adminMsg" style="margin-top:8px"></div>
         </div>
         <div>
@@ -788,12 +792,14 @@ function renderGrid(){
     var fav=favorites.has(t.id);var glyph=t.custom?t.emoji:(GLYPHS[t.id]||t.emoji);var darkTile=isDarkTile(t);
     card.innerHTML=
       '<button class="del-btn" title="Remove tool" aria-label="Remove '+esc(t.name)+'">✕</button>'+
+      (t.custom?'<button class="edit-btn" title="Edit tool" aria-label="Edit '+esc(t.name)+'">✎</button>':'')+
       '<div class="tool-top"><div class="tool-pic '+(darkTile?'tile-dark':'tile-light')+'" style="background:'+tileGrad(t)+'">'+(t.img?'<img src="'+esc(t.img)+'" alt="" loading="lazy">':esc(glyph))+'</div><div><div class="cat">'+esc(t.cat)+(t.custom?' • Custom':'')+'</div><h3>'+esc(t.name)+'</h3></div></div>'+
       '<p class="tool-desc">'+esc(t.desc)+'</p>'+
-      '<div class="card-actions"><button class="btn btn-dark open-btn">'+((t.custom&&t.url)?'Open Link ↗':'Open Tool →')+'</button>'+
+      '<div class="card-actions">'+((t.custom&&t.url)?'<a class="btn btn-dark open-btn" href="'+esc(t.url)+'" target="_blank" rel="noopener">Open Link ↗</a>':'<button class="btn btn-dark open-btn">Open Tool →</button>')+
       '<button class="fav-btn'+(fav?' active':'')+'" title="Favorite" aria-label="Toggle favorite">★</button></div>';
     card.querySelector('.del-btn').addEventListener('click',function(e){e.stopPropagation();removeTool(t.id)});
-    card.querySelector('.open-btn').addEventListener('click',function(){openTool(t.id)});
+    var eb=card.querySelector('.edit-btn');if(eb)eb.addEventListener('click',function(e){e.stopPropagation();tkEditTool(t.id)});
+    var ob=card.querySelector('.open-btn');if(ob&&ob.tagName==='BUTTON')ob.addEventListener('click',function(){openTool(t.id)});
     card.querySelector('.fav-btn').addEventListener('click',function(){toggleFav(t.id)});
     grid.appendChild(card);
   });
@@ -1266,7 +1272,54 @@ window.addEventListener('load',function(){setTimeout(tkRenderDl,600);});
 /* tkPicTool */
 window.addEventListener('load',function(){
   var prev=window.addCustomTool;
+  window.tkEditId=null;
+  function tkFormMsg(t,ok){var msg=document.getElementById('adminMsg');if(msg){msg.textContent=t;msg.className='msg '+(ok?'ok':'err');}}
+  function tkNormLink(v){v=(v||'').trim();if(v&&!/^https?:\/\//i.test(v))v='https://'+v;return v;}
+  function tkResetForm(){
+    ['newName','newDesc','newImg','newUrl'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+    window.tkEditId=null;
+    var b=document.getElementById('addToolBtn');if(b)b.textContent='➕ Add Tool to Toolkit';
+    var c=document.getElementById('editCancelBtn');if(c)c.style.display='none';
+    var h=document.getElementById('addFormTitle');if(h)h.textContent='➕ Add New Tool';
+  }
+  window.tkCancelEdit=function(){tkResetForm();tkFormMsg('Edit cancel ho gaya.',true);};
+  window.tkEditTool=function(id){
+    var t=tools.find(function(x){return x.id===id});if(!t)return;
+    document.getElementById('newName').value=t.name||'';
+    document.getElementById('newDesc').value=t.desc||'';
+    var ic=document.getElementById('newIcon');if(ic)ic.value=t.emoji||'🛠️';
+    var ct=document.getElementById('newCat');if(ct)ct.value=t.cat||'Custom';
+    var im=document.getElementById('newImg');if(im)im.value=t.img||'';
+    var ur=document.getElementById('newUrl');if(ur)ur.value=t.url||'';
+    window.tkEditId=id;
+    var b=document.getElementById('addToolBtn');if(b)b.textContent='💾 Update Tool';
+    var c=document.getElementById('editCancelBtn');if(c)c.style.display='';
+    var h=document.getElementById('addFormTitle');if(h)h.textContent='✎ Edit Tool';
+    tkFormMsg('✎ "'+t.name+'" edit ho raha hai — changes karke Update dabao.',true);
+    var ap=document.getElementById('adminPanel');if(ap)ap.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  function tkDoEdit(){
+    var t=tools.find(function(x){return x.id===window.tkEditId});
+    if(!t){tkResetForm();return;}
+    var name=document.getElementById('newName').value.trim();
+    var desc=document.getElementById('newDesc').value.trim();
+    if(!name||!desc){tkFormMsg('⚠ Tool Name and Description are both required.',false);return;}
+    var imgEl=document.getElementById('newImg');var img=imgEl?imgEl.value.trim():'';
+    if(img&&!/^https?:\/\//i.test(img)){tkFormMsg('⚠ Picture link must start with http:// or https://',false);return;}
+    var urEl=document.getElementById('newUrl');
+    t.name=name;t.desc=desc;
+    var ic=document.getElementById('newIcon');t.emoji=(ic&&ic.value.trim())||'🛠️';
+    var ct=document.getElementById('newCat');if(ct)t.cat=ct.value;
+    t.img=img;t.url=tkNormLink(urEl?urEl.value:'');
+    tkResetForm();
+    tkFormMsg('✓ "'+name+'" update ho gaya — sab ko show hoga.',true);
+    renderGrid();toast('✎ Tool updated: '+name);
+    if(typeof tkSync==='function')tkSync();
+  }
+  var prevRm=window.removeTool;
+  window.removeTool=function(id){if(window.tkEditId===id)tkResetForm();prevRm(id);};
   window.addCustomTool=function(){
+    if(window.tkEditId){tkDoEdit();return;}
     var urlEl=document.getElementById('newImg'),fileEl=document.getElementById('newImgFile');
     var url=urlEl?urlEl.value.trim():'';
     var file=fileEl&&fileEl.files?fileEl.files[0]:null;
