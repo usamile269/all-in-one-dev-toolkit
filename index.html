@@ -1267,21 +1267,50 @@ window.addEventListener('load',function(){
       if(!/^https?:\/\//i.test(url)){msg.textContent='⚠ Picture link must start with http:// or https://';msg.className='msg err';return;}
       finish(url);return;
     }
-    if(file.size>3.5*1024*1024){msg.textContent='⚠ Picture too large — max ~3.5 MB.';msg.className='msg err';return;}
     var key=null;try{key=sessionStorage.getItem('tk_admin_key');}catch(e){}
     if(!key){key=prompt('Enter admin key:');if(!key)return;try{sessionStorage.setItem('tk_admin_key',key);}catch(e){}}
-    msg.textContent='⏳ Uploading picture…';msg.className='msg';
-    var rd=new FileReader();
-    rd.onload=function(){
-      var b64=String(rd.result).split(',')[1]||'';
-      fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify({filename:file.name,data:b64})})
+    msg.textContent='\u23f3 Picture tayyar ho rahi hai\u2026';msg.className='msg';
+    function sendUp(fname,b64){
+      msg.textContent='\u23f3 Uploading picture\u2026';msg.className='msg';
+      var ctl=('AbortController' in window)?new AbortController():null;
+      var timedOut=false;
+      var timer=ctl?setTimeout(function(){timedOut=true;ctl.abort();},90000):null;
+      fetch('/api/upload',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify({filename:fname,data:b64}),signal:ctl?ctl.signal:undefined})
       .then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});})
       .then(function(x){
-        if(!x.ok){msg.textContent='⚠ '+(x.d&&x.d.error?x.d.error:'Upload failed.');msg.className='msg err';return;}
+        if(timer)clearTimeout(timer);
+        if(!x.ok){msg.textContent='\u26a0 '+(x.d&&x.d.error?x.d.error:'Upload failed.');msg.className='msg err';return;}
         finish(x.d.url);
-      }).catch(function(){msg.textContent='⚠ Network error — try again.';msg.className='msg err';});
-    };
-    rd.readAsDataURL(file);
+      }).catch(function(){
+        if(timer)clearTimeout(timer);
+        msg.textContent=timedOut?'\u26a0 Upload time-out ho gaya \u2014 net slow hai, dobara try karo.':'\u26a0 Network error \u2014 try again.';msg.className='msg err';
+      });
+    }
+    function rawSend(){
+      var rd=new FileReader();
+      rd.onload=function(){sendUp(file.name,String(rd.result).split(',')[1]||'');};
+      rd.onerror=function(){msg.textContent='\u26a0 Picture parhi nahi gayi \u2014 dobara try karo.';msg.className='msg err';};
+      rd.readAsDataURL(file);
+    }
+    if(file.size<=700*1024){rawSend();}
+    else{
+      var img=new Image();
+      var objUrl=URL.createObjectURL(file);
+      img.onload=function(){
+        try{
+          var max=1280,w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+          var sc=Math.min(1,max/Math.max(w,h));
+          var cw=Math.max(1,Math.round(w*sc)),ch=Math.max(1,Math.round(h*sc));
+          var cv=document.createElement('canvas');cv.width=cw;cv.height=ch;
+          cv.getContext('2d').drawImage(img,0,0,cw,ch);
+          URL.revokeObjectURL(objUrl);
+          var durl=cv.toDataURL('image/jpeg',0.85);
+          sendUp((file.name.replace(/\.[^.]+$/,'')||'picture')+'.jpg',durl.split(',')[1]||'');
+        }catch(e){rawSend();}
+      };
+      img.onerror=function(){URL.revokeObjectURL(objUrl);rawSend();};
+      img.src=objUrl;
+    }
   };
 });
 </script>
