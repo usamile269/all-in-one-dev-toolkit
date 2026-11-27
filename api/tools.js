@@ -15,6 +15,10 @@ async function readData() {
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method === 'GET') {
+    if (req.query && req.query.debug === '1' && req.headers['x-admin-key'] === process.env.ADMIN_KEY) {
+      const { blobs } = await list({ prefix: 'tools.json' });
+      return res.status(200).json({ blobs: (blobs || []).map(b => ({ pathname: b.pathname, uploadedAt: b.uploadedAt, size: b.size, url: b.url })) });
+    }
     return res.status(200).json(await readData());
   }
   if (req.method === 'POST') {
