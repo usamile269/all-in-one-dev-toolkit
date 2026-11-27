@@ -17,7 +17,10 @@ module.exports = async (req, res) => {
   if (req.method === 'GET') {
     if (req.query && req.query.debug === '1' && req.headers['x-admin-key'] === process.env.ADMIN_KEY) {
       const { blobs } = await list({ prefix: 'tools.json' });
-      return res.status(200).json({ blobs: (blobs || []).map(b => ({ pathname: b.pathname, uploadedAt: b.uploadedAt, size: b.size, url: b.url })) });
+      const sorted = (blobs || []).slice().sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+      let fetched = '';
+      try { const fr = await fetch(sorted[0].url + '?v=' + Date.now(), { cache: 'no-store' }); fetched = (await fr.text()).slice(0, 200); } catch (e) { fetched = 'ERR ' + e.message; }
+      return res.status(200).json({ blobs: (blobs || []).map(b => ({ pathname: b.pathname, uploadedAt: b.uploadedAt, size: b.size, url: b.url })), fetched });
     }
     return res.status(200).json(await readData());
   }
